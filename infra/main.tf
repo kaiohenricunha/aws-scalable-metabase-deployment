@@ -173,7 +173,7 @@ module "karpenter" {
   irsa_namespace_service_accounts = ["karpenter:karpenter"]
 
   create_iam_role = false
-  iam_role_arn    = module.eks.eks_managed_node_groups["initial"].iam_role_arn
+  iam_role_arn    = module.eks.eks_managed_node_groups["general"].iam_role_arn
 
   tags = {
     Environment = "lab"
