@@ -168,8 +168,8 @@ module "eks" {
 
   eks_managed_node_groups = {
     general = {
-      desired_size = 3
-      min_size     = 3
+      desired_size = 5
+      min_size     = 5
       max_size     = 10
 
       labels = {
@@ -222,22 +222,17 @@ module "eks" {
 module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
-  cluster_name = module.eks.cluster_name
-
-  irsa_oidc_provider_arn          = module.eks.oidc_provider_arn
-  irsa_namespace_service_accounts = ["karpenter:karpenter"]
+  cluster_name           = module.eks.cluster_name
+  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
   enable_karpenter_instance_profile_creation = true
 
-  # Used to attach additional IAM policies to the Karpenter node IAM role
+   # Used to attach additional IAM policies to the Karpenter node IAM role
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
-
-  create_iam_role = false
-  iam_role_arn    = module.eks.eks_managed_node_groups["general"].iam_role_arn
 
   tags = {
     Environment = "lab"
