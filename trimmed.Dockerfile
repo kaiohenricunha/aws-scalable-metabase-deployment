@@ -46,6 +46,8 @@ RUN apt-get clean && \
 
 # Copy files from the current directory to /home/sre in the container
 COPY . /home/sre
+# Set ownership of /home/sre to the sre user
+RUN chown -R sre:sre /home/sre
 
 # Set environment PATH for all users
 ENV PATH="/opt/tfenv/bin:/opt/tgenv/bin:/usr/local/bin/kubectx:/usr/local/bin/kubens:/usr/local/bin:${PATH}"
