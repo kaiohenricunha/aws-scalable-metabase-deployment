@@ -168,8 +168,8 @@ module "eks" {
 
   eks_managed_node_groups = {
     general = {
-      desired_size = 1
-      min_size     = 1
+      desired_size = 5
+      min_size     = 5
       max_size     = 10
 
       labels = {
@@ -181,8 +181,8 @@ module "eks" {
     }
 
     spot = {
-      desired_size = 3
-      min_size     = 3
+      desired_size = 1
+      min_size     = 1
       max_size     = 10
 
       labels = {
@@ -229,7 +229,7 @@ module "karpenter" {
   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
   enable_karpenter_instance_profile_creation = true
 
-  # Used to attach additional IAM policies to the Karpenter node IAM role
+   # Used to attach additional IAM policies to the Karpenter node IAM role
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
