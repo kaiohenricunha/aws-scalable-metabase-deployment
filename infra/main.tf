@@ -181,19 +181,19 @@ module "eks" {
     }
   }
 
-  # Shown just for connection between cluster and Karpenter sub-module below
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
-    {
-      rolearn  = module.karpenter.role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups = [
-        "system:bootstrappers",
-        "system:nodes",
-      ]
-    },
-  ]
+  # # Shown just for connection between cluster and Karpenter sub-module below
+  # manage_aws_auth_configmap = true
+  # aws_auth_roles = [
+  #   # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
+  #   {
+  #     rolearn  = module.karpenter.role_arn
+  #     username = "system:node:{{EC2PrivateDNSName}}"
+  #     groups = [
+  #       "system:bootstrappers",
+  #       "system:nodes",
+  #     ]
+  #   },
+  # ]
 
   tags = {
     Environment = "lab"
