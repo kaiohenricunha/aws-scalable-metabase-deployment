@@ -1,5 +1,10 @@
 name: Destroy Infrastructure
 
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: 'us-west-2'
+
 on: 
   workflow_dispatch:
 
@@ -22,10 +27,6 @@ jobs:
       run: |
         cd infra/vpc
         terraform destroy -auto-approve
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2'
 
     # Destroy Backend Configuration
     - name: Terraform Init in Backend
