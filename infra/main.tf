@@ -19,6 +19,7 @@ terraform {
 
 provider "aws" {
   region = "us-west-2"
+  alias = "oregon"
 }
 
 provider "kubernetes" {
@@ -59,6 +60,11 @@ provider "kubectl" {
     # This requires the awscli to be installed locally where Terraform is executed
     args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
   }
+}
+
+data "aws_availability_zones" "available" {}
+data "aws_ecrpublic_authorization_token" "token" {
+  provider = aws.oregon
 }
 
 terraform {
