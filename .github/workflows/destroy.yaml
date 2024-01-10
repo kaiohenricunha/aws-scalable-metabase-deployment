@@ -1,0 +1,42 @@
+name: Destroy Infrastructure
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Destroy VPC Configuration
+    - name: Terraform Init in VPC
+      run: |
+        cd infra/vpc
+        terraform init
+    - name: Terraform Destroy in VPC
+      run: |
+        cd infra/vpc
+        terraform destroy -auto-approve
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-west-2'
+
+    # Destroy Backend Configuration
+    - name: Terraform Init in Backend
+      run: |
+        cd infra/backend
+        terraform init
+    - name: Terraform Destroy in Backend
+      run: |
+        cd infra/backend
+        terraform destroy -auto-approve
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-west-2'
