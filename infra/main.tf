@@ -200,98 +200,98 @@ module "eks" {
   }
 }
 
-module "karpenter" {
-  source = "terraform-aws-modules/eks/aws//modules/karpenter"
+# module "karpenter" {
+#   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
-  cluster_name           = module.eks.cluster_name
-  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+#   cluster_name           = module.eks.cluster_name
+#   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
-  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
-  enable_karpenter_instance_profile_creation = true
+#   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
+#   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
+#   enable_karpenter_instance_profile_creation = true
 
-   # Used to attach additional IAM policies to the Karpenter node IAM role
-  iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
+#    # Used to attach additional IAM policies to the Karpenter node IAM role
+#   iam_role_additional_policies = {
+#     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+#   }
 
-  tags = {
-    Environment = "lab"
-    Terraform   = "true"
-  }
-}
+#   tags = {
+#     Environment = "lab"
+#     Terraform   = "true"
+#   }
+# }
 
-resource "helm_release" "karpenter" {
-  namespace        = "karpenter"
-  create_namespace = true
+# resource "helm_release" "karpenter" {
+#   namespace        = "karpenter"
+#   create_namespace = true
 
-  name                = "karpenter"
-  repository          = "oci://public.ecr.aws/karpenter"
-  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-  repository_password = data.aws_ecrpublic_authorization_token.token.password
-  chart               = "karpenter"
-  version             = "v0.32.1"
+#   name                = "karpenter"
+#   repository          = "oci://public.ecr.aws/karpenter"
+#   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+#   repository_password = data.aws_ecrpublic_authorization_token.token.password
+#   chart               = "karpenter"
+#   version             = "v0.32.1"
 
-  values = [
-    <<-EOT
-    settings:
-      clusterName: ${module.eks.cluster_name}
-      clusterEndpoint: ${module.eks.cluster_endpoint}
-      interruptionQueueName: ${module.karpenter.queue_name}
-    serviceAccount:
-      annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
-    EOT
-  ]
-}
+#   values = [
+#     <<-EOT
+#     settings:
+#       clusterName: ${module.eks.cluster_name}
+#       clusterEndpoint: ${module.eks.cluster_endpoint}
+#       interruptionQueueName: ${module.karpenter.queue_name}
+#     serviceAccount:
+#       annotations:
+#         eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
+#     EOT
+#   ]
+# }
 
-resource "kubectl_manifest" "karpenter_node_class" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1beta1
-    kind: EC2NodeClass
-    metadata:
-      name: default
-    spec:
-      amiFamily: AL2
-      role: ${module.karpenter.role_name}
-      subnetSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      tags:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-  YAML
+# resource "kubectl_manifest" "karpenter_node_class" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.k8s.aws/v1beta1
+#     kind: EC2NodeClass
+#     metadata:
+#       name: default
+#     spec:
+#       amiFamily: AL2
+#       role: ${module.karpenter.role_name}
+#       subnetSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#       securityGroupSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#       tags:
+#         karpenter.sh/discovery: ${module.eks.cluster_name}
+#   YAML
 
-  depends_on = [
-    helm_release.karpenter
-  ]
-}
+#   depends_on = [
+#     helm_release.karpenter
+#   ]
+# }
 
-resource "kubectl_manifest" "karpenter_node_pool" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1beta1
-    kind: NodePool
-    metadata:
-      name: default
-    spec:
-      template:
-        spec:
-          nodeClassRef:
-            name: default
-          requirements:
-            - key: "karpenter.k8s.aws/instance-type"
-              operator: In
-              values: ["t2.micro", "t3.micro"]
-      limits:
-        cpu: 1000
-      disruption:
-        consolidationPolicy: WhenEmpty
-        consolidateAfter: 30s
-  YAML
+# resource "kubectl_manifest" "karpenter_node_pool" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.sh/v1beta1
+#     kind: NodePool
+#     metadata:
+#       name: default
+#     spec:
+#       template:
+#         spec:
+#           nodeClassRef:
+#             name: default
+#           requirements:
+#             - key: "karpenter.k8s.aws/instance-type"
+#               operator: In
+#               values: ["t2.micro", "t3.micro"]
+#       limits:
+#         cpu: 1000
+#       disruption:
+#         consolidationPolicy: WhenEmpty
+#         consolidateAfter: 30s
+#   YAML
 
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
+#   depends_on = [
+#     kubectl_manifest.karpenter_node_class
+#   ]
+# }
