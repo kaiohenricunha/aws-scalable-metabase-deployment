@@ -27,12 +27,11 @@ jobs:
         cd infra/state-backend
         terraform init
 
-    # Apply VPC Configuration
-    - name: Terraform Init in VPC
+    - name: Terraform Init
       run: |
-        cd infra/vpc
+        cd infra
         terraform init
     - name: Terraform Apply in VPC
       run: |
-        cd infra/vpc
+        cd infra
         terraform apply -auto-approve

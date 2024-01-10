@@ -24,10 +24,9 @@ jobs:
         cd infra/state-backend
         terraform init
 
-    # Destroy VPC Configuration
-    - name: Terraform Destroy in VPC
+    - name: Terraform Destroy
       run: |
-        cd infra/vpc
+        cd infra
         terraform destroy -auto-approve
 
     # Optionally Destroy Backend Configuration
