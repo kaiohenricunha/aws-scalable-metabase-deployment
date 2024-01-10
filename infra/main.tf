@@ -76,6 +76,22 @@ data "aws_ecrpublic_authorization_token" "token" {
   provider = aws.virginia
 }
 
+locals {
+  name            = "eks-lab"
+  cluster_version = "1.28"
+  region          = "us-west-2"
+
+  vpc_cidr = "10.0.0.0/16"
+  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+
+  tags = {
+    Environment = "lab"
+    Example    = local.name
+    GithubRepo = "aws-scalable-metabase-deployment"
+    GithubOrg  = "kaiohenricunha"
+  }
+}
+
 terraform {
   backend "s3" {
     bucket = "kaio-lab-terraform-state"
@@ -124,173 +140,209 @@ resource "aws_s3_bucket_public_access_block" "block" {
  restrict_public_buckets = true
 }
 
+################################################################################
+# VPC
+################################################################################
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.5.0"
 
   name = "lab-vpc"
-  cidr = "10.0.0.0/16"
+  cidr = local.vpc_cidr
 
-  azs             = ["us-west-2a", "us-west-2b"]
-  private_subnets = ["10.0.0.0/19", "10.0.32.0/19"]
-  public_subnets  = ["10.0.64.0/19", "10.0.96.0/19"]
+  azs             = local.azs
+  private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 4, k)]
+  public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 48)]
+  intra_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 52)]
 
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
-  one_nat_gateway_per_az = false
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-
-  tags = {
-    Environment = "lab"
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
   }
+
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
+    # Tags subnets for Karpenter auto-discovery
+    "karpenter.sh/discovery" = local.name
+  }
+
+  tags = local.tags
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.21.0"
 
-  cluster_name    = "eks-lab"
-  cluster_version = "1.28"
+  cluster_name                   = local.name
+  cluster_version                = local.cluster_version
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
-
-  enable_irsa = true
-
-  eks_managed_node_group_defaults = {
-    disk_size = 50
-  }
-
-  eks_managed_node_groups = {
-    general = {
-      min_size     = 5
-      max_size     = 10
-
-      labels = {
-        role = "general"
-      }
-
-      instance_types = ["t3.micro"]
-      capacity_type  = "ON_DEMAND"
+  cluster_addons = {
+    kube-proxy = {}
+    vpc-cni    = {}
+    coredns = {
+      configuration_values = jsonencode({
+        computeType = "Fargate"
+        # Ensure that we fully utilize the minimum amount of resources that are supplied by
+        # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
+        # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
+        # components (kubelet, kube-proxy, and containerd). Fargate rounds up to the following
+        # compute configuration that most closely matches the sum of vCPU and memory requests in
+        # order to ensure pods always have the resources that they need to run.
+        resources = {
+          limits = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+          requests = {
+            cpu = "0.25"
+            # We are targeting the smallest Task size of 512Mb, so we subtract 256Mb from the
+            # request/limit to ensure we can fit within that task
+            memory = "256M"
+          }
+        }
+      })
     }
   }
 
-  # # Shown just for connection between cluster and Karpenter sub-module below
-  # manage_aws_auth_configmap = true
-  # aws_auth_roles = [
-  #   # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
-  #   {
-  #     rolearn  = module.karpenter.role_arn
-  #     username = "system:node:{{EC2PrivateDNSName}}"
-  #     groups = [
-  #       "system:bootstrappers",
-  #       "system:nodes",
-  #     ]
-  #   },
-  # ]
+  vpc_id                   = module.vpc.vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
+
+  # Fargate profiles use the cluster primary security group so these are not utilized
+  create_cluster_security_group = false
+  create_node_security_group    = false
+
+  manage_aws_auth_configmap = true
+  aws_auth_roles = [
+    # We need to add in the Karpenter node IAM role for nodes launched by Karpenter
+    {
+      rolearn  = module.karpenter.role_arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups = [
+        "system:bootstrappers",
+        "system:nodes",
+      ]
+    },
+  ]
+
+  fargate_profiles = {
+    karpenter = {
+      selectors = [
+        { namespace = "karpenter" }
+      ]
+    }
+    kube-system = {
+      selectors = [
+        { namespace = "kube-system" }
+      ]
+    }
+  }
 
   tags = {
     Environment = "lab"
+    "karpenter.sh/discovery" = local.name
   }
 }
 
-# module "karpenter" {
-#   source = "terraform-aws-modules/eks/aws//modules/karpenter"
+module "karpenter" {
+  source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
-#   cluster_name           = module.eks.cluster_name
-#   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
+  cluster_name           = module.eks.cluster_name
+  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
 
-#   # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
-#   # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
-#   enable_karpenter_instance_profile_creation = true
+  # In v0.32.0/v1beta1, Karpenter now creates the IAM instance profile
+  # so we disable the Terraform creation and add the necessary permissions for Karpenter IRSA
+  enable_karpenter_instance_profile_creation = true
 
-#    # Used to attach additional IAM policies to the Karpenter node IAM role
-#   iam_role_additional_policies = {
-#     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-#   }
+   # Used to attach additional IAM policies to the Karpenter node IAM role
+  iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 
-#   tags = {
-#     Environment = "lab"
-#     Terraform   = "true"
-#   }
-# }
+  tags = {
+    Environment = "lab"
+    Terraform   = "true"
+  }
+}
 
-# resource "helm_release" "karpenter" {
-#   namespace        = "karpenter"
-#   create_namespace = true
+resource "helm_release" "karpenter" {
+  namespace        = "karpenter"
+  create_namespace = true
 
-#   name                = "karpenter"
-#   repository          = "oci://public.ecr.aws/karpenter"
-#   repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-#   repository_password = data.aws_ecrpublic_authorization_token.token.password
-#   chart               = "karpenter"
-#   version             = "v0.32.1"
+  name                = "karpenter"
+  repository          = "oci://public.ecr.aws/karpenter"
+  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+  repository_password = data.aws_ecrpublic_authorization_token.token.password
+  chart               = "karpenter"
+  version             = "v0.32.1"
 
-#   values = [
-#     <<-EOT
-#     settings:
-#       clusterName: ${module.eks.cluster_name}
-#       clusterEndpoint: ${module.eks.cluster_endpoint}
-#       interruptionQueueName: ${module.karpenter.queue_name}
-#     serviceAccount:
-#       annotations:
-#         eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
-#     EOT
-#   ]
-# }
+  values = [
+    <<-EOT
+    settings:
+      clusterName: ${module.eks.cluster_name}
+      clusterEndpoint: ${module.eks.cluster_endpoint}
+      interruptionQueueName: ${module.karpenter.queue_name}
+    serviceAccount:
+      annotations:
+        eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
+    EOT
+  ]
+}
 
-# resource "kubectl_manifest" "karpenter_node_class" {
-#   yaml_body = <<-YAML
-#     apiVersion: karpenter.k8s.aws/v1beta1
-#     kind: EC2NodeClass
-#     metadata:
-#       name: default
-#     spec:
-#       amiFamily: AL2
-#       role: ${module.karpenter.role_name}
-#       subnetSelectorTerms:
-#         - tags:
-#             karpenter.sh/discovery: ${module.eks.cluster_name}
-#       securityGroupSelectorTerms:
-#         - tags:
-#             karpenter.sh/discovery: ${module.eks.cluster_name}
-#       tags:
-#         karpenter.sh/discovery: ${module.eks.cluster_name}
-#   YAML
+resource "kubectl_manifest" "karpenter_node_class" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.k8s.aws/v1beta1
+    kind: EC2NodeClass
+    metadata:
+      name: default
+    spec:
+      amiFamily: AL2
+      role: ${module.karpenter.role_name}
+      subnetSelectorTerms:
+        - tags:
+            karpenter.sh/discovery: ${module.eks.cluster_name}
+      securityGroupSelectorTerms:
+        - tags:
+            karpenter.sh/discovery: ${module.eks.cluster_name}
+      tags:
+        karpenter.sh/discovery: ${module.eks.cluster_name}
+  YAML
 
-#   depends_on = [
-#     helm_release.karpenter
-#   ]
-# }
+  depends_on = [
+    helm_release.karpenter
+  ]
+}
 
-# resource "kubectl_manifest" "karpenter_node_pool" {
-#   yaml_body = <<-YAML
-#     apiVersion: karpenter.sh/v1beta1
-#     kind: NodePool
-#     metadata:
-#       name: default
-#     spec:
-#       template:
-#         spec:
-#           nodeClassRef:
-#             name: default
-#           requirements:
-#             - key: "karpenter.k8s.aws/instance-type"
-#               operator: In
-#               values: ["t2.micro", "t3.micro"]
-#       limits:
-#         cpu: 1000
-#       disruption:
-#         consolidationPolicy: WhenEmpty
-#         consolidateAfter: 30s
-#   YAML
+resource "kubectl_manifest" "karpenter_node_pool" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1beta1
+    kind: NodePool
+    metadata:
+      name: default
+    spec:
+      template:
+        spec:
+          nodeClassRef:
+            name: default
+          requirements:
+            - key: "karpenter.k8s.aws/instance-type"
+              operator: In
+              values: ["t2.micro", "t3.micro"]
+      limits:
+        cpu: 1000
+      disruption:
+        consolidationPolicy: WhenEmpty
+        consolidateAfter: 30s
+  YAML
 
-#   depends_on = [
-#     kubectl_manifest.karpenter_node_class
-#   ]
-# }
+  depends_on = [
+    kubectl_manifest.karpenter_node_class
+  ]
+}
