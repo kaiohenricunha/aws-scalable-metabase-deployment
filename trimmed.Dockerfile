@@ -34,6 +34,10 @@ RUN git clone --depth=1 https://github.com/tfutils/tfenv.git /opt/tfenv && \
     chown -R sre:sre /opt/tfenv && \
     chown -R sre:sre /opt/tgenv
 
+# Install specific Terraform version and set as default
+RUN /opt/tfenv/bin/tfenv install 1.5.5 && \
+    /opt/tfenv/bin/tfenv use 1.5.5
+
 # AWS CLI
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \

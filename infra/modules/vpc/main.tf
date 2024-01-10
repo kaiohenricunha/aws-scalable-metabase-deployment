@@ -1,45 +1,41 @@
-provider "aws" {
-  region = "us-west-2"
-}
-
 resource "aws_vpc" "lab-vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr_block
   tags = {
-    Name = "lab-vpc"
+    Name = var.vpc_name
   }
 }
 
 resource "aws_subnet" "private-subnet-1" {
-  vpc_id     = aws_vpc.lab-vpc.id
-  cidr_block = "10.0.1.0/24"
-  availability_zone = "us-west-2a"
+  vpc_id            = aws_vpc.lab-vpc.id
+  cidr_block        = var.private_subnet_cidr_blocks[0]
+  availability_zone = var.availability_zones[0]
   tags = {
     Name = "private-subnet-1"
   }
 }
 
 resource "aws_subnet" "private-subnet-2" {
-  vpc_id     = aws_vpc.lab-vpc.id
-  cidr_block = "10.0.2.0/24"
-  availability_zone = "us-west-2b"
+  vpc_id            = aws_vpc.lab-vpc.id
+  cidr_block        = var.private_subnet_cidr_blocks[1]
+  availability_zone = var.availability_zones[1]
   tags = {
     Name = "private-subnet-2"
   }
 }
 
 resource "aws_subnet" "public-subnet-1" {
-  vpc_id     = aws_vpc.lab-vpc.id
-  cidr_block = "10.0.3.0/24"
-  availability_zone = "us-west-2a"
+  vpc_id            = aws_vpc.lab-vpc.id
+  cidr_block        = var.public_subnet_cidr_blocks[0]
+  availability_zone = var.availability_zones[0]
   tags = {
     Name = "public-subnet-1"
   }
 }
 
 resource "aws_subnet" "public-subnet-2" {
-  vpc_id     = aws_vpc.lab-vpc.id
-  cidr_block = "10.0.4.0/24"
-  availability_zone = "us-west-2b"
+  vpc_id            = aws_vpc.lab-vpc.id
+  cidr_block        = var.public_subnet_cidr_blocks[1]
+  availability_zone = var.availability_zones[1]
   tags = {
     Name = "public-subnet-2"
   }
@@ -49,7 +45,7 @@ resource "aws_internet_gateway" "lab-igw" {
   vpc_id = aws_vpc.lab-vpc.id
   tags = {
     Name = "lab-vpc-IGW"
-    }
+  }
 }
 
 resource "aws_route_table" "public-route-table" {
@@ -77,17 +73,17 @@ resource "aws_route_table_association" "public-subnet-2-association" {
 
 resource "aws_eip" "nat-eip" {
   vpc = true
-   tags = {
-      Name = "nat-eip"
-      }
+  tags = {
+    Name = "nat-eip"
+  }
 }
 
 resource "aws_nat_gateway" "nat-gateway" {
   allocation_id = aws_eip.nat-eip.id
   subnet_id     = aws_subnet.public-subnet-1.id
   tags = {
-      Name = "nat-gateway"
-      }
+    Name = "nat-gateway"
+  }
 }
 
 resource "aws_security_group" "web-sg" {

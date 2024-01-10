@@ -21,26 +21,17 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
 
-    # Apply Backend Configuration
-    - name: Terraform Init in Backend
-      run: |
-        cd infra/backend
-        terraform init
-    - name: Terraform Apply in Backend
-      run: |
-        cd infra/backend
-        terraform apply -auto-approve
+    # # Apply Backend Configuration
+    # - name: Terraform Init in Backend
+    #   run: |
+    #     cd infra/state-backend
+    #     terraform init
 
-    # Apply VPC Configuration
-    - name: Terraform Init in VPC
+    - name: Terraform Init
       run: |
-        cd infra/vpc
+        cd infra
         terraform init
-    - name: Terraform Apply in VPC
+    - name: Terraform Apply
       run: |
-        cd infra/vpc
+        cd infra
         terraform apply -auto-approve
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2' # Replace with your AWS region
