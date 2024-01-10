@@ -1,10 +1,20 @@
 terraform {
   required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.6.0"
+    }
     aws = {
       source  = "hashicorp/aws"
       version = "~> 3.0"
     }
   }
+
+  required_version = "~> 1.0"
 }
 
 provider "aws" {
@@ -61,11 +71,24 @@ resource "aws_s3_bucket_public_access_block" "block" {
 
 
 module "vpc" {
-  source = "./modules/vpc"
-  
-  vpc_cidr_block             = "10.0.0.0/16"
-  vpc_name                   = "lab-vpc"
-  availability_zones         = ["us-west-2a", "us-west-2b"]
-  private_subnet_cidr_blocks = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnet_cidr_blocks  = ["10.0.3.0/24", "10.0.4.0/24"]
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.14.3"
+
+  name = "lab-vpc"
+  cidr = "10.0.0.0/16"
+
+  azs             = ["us-east-1a", "us-east-1b"]
+  private_subnets = ["10.0.0.0/19", "10.0.32.0/19"]
+  public_subnets  = ["10.0.64.0/19", "10.0.96.0/19"]
+
+  enable_nat_gateway     = true
+  single_nat_gateway     = true
+  one_nat_gateway_per_az = false
+
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags = {
+    Environment = "lab"
+  }
 }
