@@ -31,7 +31,7 @@ jobs:
       run: |
         cd infra
         terraform init
-    - name: Terraform Apply in VPC
+    - name: Terraform Apply
       run: |
         cd infra
         terraform apply -auto-approve

@@ -27,12 +27,11 @@ jobs:
         cd infra/state-backend
         terraform init
 
-    # Plan VPC Configuration
-    - name: Terraform Init in VPC
+    - name: Terraform Init
       run: |
         cd infra
         terraform init
-    - name: Terraform Plan in VPC
+    - name: Terraform Plan
       run: |
         cd infra
         terraform plan
