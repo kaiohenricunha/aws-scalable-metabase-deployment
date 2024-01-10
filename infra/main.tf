@@ -169,7 +169,7 @@ module "eks" {
   eks_managed_node_groups = {
     general = {
       desired_size = 5
-      min_size     = 1
+      min_size     = 5
       max_size     = 10
 
       labels = {
