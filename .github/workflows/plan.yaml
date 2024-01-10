@@ -24,12 +24,8 @@ jobs:
     # Plan Backend Configuration
     - name: Terraform Init in Backend
       run: |
-        cd infra/backend
+        cd infra/state-backend
         terraform init
-    - name: Terraform Plan in Backend
-      run: |
-        cd infra/backend
-        terraform plan
 
     # Plan VPC Configuration
     - name: Terraform Init in VPC
@@ -40,7 +36,3 @@ jobs:
       run: |
         cd infra/vpc
         terraform plan
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2'

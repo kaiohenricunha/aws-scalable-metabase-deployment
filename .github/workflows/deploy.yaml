@@ -24,12 +24,8 @@ jobs:
     # Apply Backend Configuration
     - name: Terraform Init in Backend
       run: |
-        cd infra/backend
+        cd infra/state-backend
         terraform init
-    - name: Terraform Apply in Backend
-      run: |
-        cd infra/backend
-        terraform apply -auto-approve
 
     # Apply VPC Configuration
     - name: Terraform Init in VPC
@@ -40,7 +36,3 @@ jobs:
       run: |
         cd infra/vpc
         terraform apply -auto-approve
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: 'us-west-2' # Replace with your AWS region
