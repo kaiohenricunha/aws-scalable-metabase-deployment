@@ -21,11 +21,11 @@ jobs:
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
 
-    # Plan Backend Configuration
-    - name: Terraform Init in Backend
-      run: |
-        cd infra/state-backend
-        terraform init
+    # # Plan Backend Configuration
+    # - name: Terraform Init in Backend
+    #   run: |
+    #     cd infra/state-backend
+    #     terraform init
 
     - name: Terraform Init
       run: |
