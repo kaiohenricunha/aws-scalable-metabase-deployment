@@ -93,7 +93,7 @@ module "eks" {
   version = "19.21.0"
 
   cluster_name    = "eks-lab"
-  cluster_version = "1.29"
+  cluster_version = "1.28"
 
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -144,4 +144,25 @@ module "eks" {
   tags = {
     Environment = "lab"
   }
+}
+
+module "allow_eks_access_iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "5.3.1"
+
+  name          = "allow-eks-access"
+  create_policy = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "eks:DescribeCluster",
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
 }
