@@ -179,25 +179,6 @@ module "eks" {
       instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
     }
-
-    spot = {
-      desired_size = 1
-      min_size     = 1
-      max_size     = 10
-
-      labels = {
-        role = "spot"
-      }
-
-      taints = [{
-        key    = "market"
-        value  = "spot"
-        effect = "NO_SCHEDULE"
-      }]
-
-      instance_types = ["t2.micro"]
-      capacity_type  = "SPOT"
-    }
   }
 
   # Shown just for connection between cluster and Karpenter sub-module below
