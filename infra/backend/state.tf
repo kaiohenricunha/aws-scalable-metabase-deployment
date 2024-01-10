@@ -13,7 +13,6 @@ resource "aws_kms_alias" "key-alias" {
 # S3 Bucket for Terraform State
 resource "aws_s3_bucket" "terraform-state" {
   bucket = "kaio-lab-terraform-state"
-  acl    = "private"
 
   versioning {
     enabled = true
