@@ -30,9 +30,9 @@ jobs:
     # Plan VPC Configuration
     - name: Terraform Init in VPC
       run: |
-        cd infra/vpc
+        cd infra/modules/vpc
         terraform init
     - name: Terraform Plan in VPC
       run: |
-        cd infra/vpc
+        cd infra/modules/vpc
         terraform plan
