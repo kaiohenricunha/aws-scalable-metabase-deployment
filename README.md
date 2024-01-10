@@ -1,4 +1,4 @@
-## Project Setup: Phase 1
+## Project Setup: Step 1
 
 ### Local Docker Environment Setup
 
