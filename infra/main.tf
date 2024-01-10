@@ -67,7 +67,7 @@ resource "aws_s3_bucket_public_access_block" "block" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.14.3"
+  version = "5.5.0"
 
   name = "lab-vpc"
   cidr = "10.0.0.0/16"
