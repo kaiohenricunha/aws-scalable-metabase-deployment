@@ -2,14 +2,15 @@ terraform {
   required_providers {
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = ">= 1.22.0"
+      version = ">= 1.14.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 3.9.2"
+      version = ">= 2.6.0"
     }
   }
-  required_version = "~> 1.2"
+
+  required_version = "~> 1.0"
 }
 
 provider "aws" {
@@ -66,7 +67,7 @@ resource "aws_s3_bucket_public_access_block" "block" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "6.0.0"
+  version = "5.5.0"
 
   name = "lab-vpc"
   cidr = "10.0.0.0/16"
@@ -89,7 +90,7 @@ module "vpc" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.0.0"
+  version = "19.21.0"
 
   cluster_name    = "eks-lab"
   cluster_version = "1.29"
