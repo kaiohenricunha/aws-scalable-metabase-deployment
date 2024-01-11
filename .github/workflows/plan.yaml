@@ -47,6 +47,7 @@ jobs:
 
       - name: Deploy Metabase
         run: |
+          pwd
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           helm template metabase pmint93/metabase -n metabase \
