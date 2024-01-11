@@ -50,7 +50,7 @@ jobs:
           envsubst < stack/metabase/values.yaml.template > stack/metabase/values.yaml
       - name: Plan Metabase
         run: |
-          cd infra/stack/metabase
+          cd stack/metabase
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           helm template metabase pmint93/metabase -f stack/metabase/values.yaml

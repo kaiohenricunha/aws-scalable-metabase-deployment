@@ -61,10 +61,10 @@ jobs:
 
     - name: Prepare Helm values
       run: |
-        envsubst < infra/stack/metabase/values.yaml.template > infra/stack/metabase/values.yaml
+        envsubst < stack/metabase/values.yaml.template > stack/metabase/values.yaml
     - name: Deploy Metabase
       run: |
         cd infra/stack/metabase
         helm repo add pmint93 https://pmint93.github.io/helm-charts
         helm repo update
-        helm install metabase pmint93/metabase -n metabase -f infra/stack/metabase/values.yaml
+        helm install metabase pmint93/metabase -n metabase -f stack/metabase/values.yaml
