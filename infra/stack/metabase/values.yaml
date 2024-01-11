@@ -23,4 +23,4 @@ readinessProbe:
   timeoutSeconds: 3
   periodSeconds: 5
 service:
-  type: LoadBalancer
+  type: ClusterIP
