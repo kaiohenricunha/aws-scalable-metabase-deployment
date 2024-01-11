@@ -70,4 +70,4 @@ jobs:
         cd infra/stack/metabase
         helm repo add pmint93 https://pmint93.github.io/helm-charts
         helm repo update
-        helm install metabase pmint93/metabase -f values.yaml
+        helm install metabase pmint93/metabase -n metabase -f values.yaml
