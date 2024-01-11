@@ -9,7 +9,7 @@ database:
 resources:
   requests:
     cpu: 500m
-    memory: 768Mi
+    memory: 500Mi
   limits:
     cpu: 800m
     memory: 700Mi

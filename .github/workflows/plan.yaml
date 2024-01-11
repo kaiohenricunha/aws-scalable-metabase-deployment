@@ -21,7 +21,7 @@ on:
       - main
 
 jobs:
-  deploy-metabase:
+  plan-infra:
     runs-on: ubuntu-latest
 
     steps:
