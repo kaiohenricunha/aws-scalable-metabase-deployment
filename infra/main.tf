@@ -171,6 +171,9 @@ module "vpc" {
   tags = local.tags
 }
 
+################################################################################
+# EKS on Fargate and Karpenter
+################################################################################
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.21.0"
@@ -379,5 +382,88 @@ resource "kubectl_manifest" "karpenter_example_deployment" {
 
   depends_on = [
     helm_release.karpenter
+  ]
+}
+
+################################################################################
+# RDS
+################################################################################
+
+variable "db_name" {}
+variable "db_username" {}
+variable "db_port" {}
+
+module "db" {
+  source = "terraform-aws-modules/rds/aws"
+
+  identifier = "lab-rds"
+
+  engine            = "mysql"
+  engine_version    = "5.7"
+  instance_class    = "db.t3.micro"
+  allocated_storage = 5
+
+  db_name     = var.db_name
+  username = var.db_username
+  port     = var.db_port
+  manage_master_user_password = true
+
+  iam_database_authentication_enabled = true
+
+  vpc_security_group_ids = ["sg-02f26832ba7827b93", "sg-020b0490638567409"]
+
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window      = "03:00-06:00"
+
+  # Enhanced Monitoring - see example for details on how to create the role
+  # by yourself, in case you don't want to create it automatically
+  monitoring_interval    = "30"
+  monitoring_role_name   = "MyRDSMonitoringRole"
+  create_monitoring_role = true
+
+  tags = {
+    Owner       = "user"
+    Environment = "lab"
+  }
+
+  # DB subnet group
+  create_db_subnet_group = true
+  subnet_ids             = ["subnet-01423441e1474523d", "subnet-058c75d74a8a77bfa"]
+
+  # DB parameter group
+  family = "mysql5.7"
+
+  # DB option group
+  major_engine_version = "5.7"
+
+  # Database Deletion Protection
+  deletion_protection = true
+
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8mb4"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8mb4"
+    }
+  ]
+
+  options = [
+    {
+      option_name = "MARIADB_AUDIT_PLUGIN"
+
+      option_settings = [
+        {
+          name  = "SERVER_AUDIT_EVENTS"
+          value = "CONNECT"
+        },
+        {
+          name  = "SERVER_AUDIT_FILE_ROTATIONS"
+          value = "37"
+        },
+      ]
+    },
   ]
 }
