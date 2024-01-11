@@ -1,7 +1,7 @@
 replicaCount: 4
 database:
   type: mysql
-  host: ${{ RDS_ENDPOINT }}}
+  host: ${{ RDS_ENDPOINT }}
   port: ${{ DB_PORT }}
   dbname: ${{ DB_NAME }}
   username: ${{ DB_USERNAME }}
@@ -13,3 +13,14 @@ resources:
   limits:
     cpu: 800m
     memory: 900Mi
+javaOpts: "-XX:+UseSerialGC"
+livenessProbe:
+  initialDelaySeconds: 120
+  timeoutSeconds: 30
+  failureThreshold: 6
+readinessProbe:
+  initialDelaySeconds: 30
+  timeoutSeconds: 3
+  periodSeconds: 5
+service:
+  type: ClusterIP
