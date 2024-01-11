@@ -5,11 +5,11 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-west-2'
   EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
-  TF_VAR_db_name: ${{ secrets.DB_NAME }}
-  TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-  TF_VAR_db_port: ${{ secrets.DB_PORT }}
-  TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
-  TF_VAR_rds_endpoint: ${{ secrets.RDS_ENDPOINT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+  RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
 
 on:
   push:
@@ -46,13 +46,6 @@ jobs:
     #   run: |
     #     cd infra/state-backend
     #     terraform init
-    - name: Configure Kubernetes Context
-      run: |
-        echo "${{ secrets.KUBECONFIG_FILE }}" > kubeconfig.yaml
-        export KUBECONFIG=$(pwd)/kubeconfig.yaml
-        kubectl config use-context arn:aws:eks:us-west-2:851725304233:cluster/eks-lab
-      env:
-        KUBECONFIG: kubeconfig.yaml
 
     - name: Terraform Init
       run: |
@@ -63,9 +56,16 @@ jobs:
         cd infra
         terraform apply -auto-approve
 
+    - name: Prepare Helm values
+      run: |
+        envsubst < infra/stack/metabase/values.yaml.template > infra/stack/metabase/values.yaml
     - name: Deploy Metabase
       run: |
         cd infra/stack/metabase
         helm repo add pmint93 https://pmint93.github.io/helm-charts
         helm repo update
-        helm install metabase pmint93/metabase -n metabase -f values.yaml
+        helm install metabase pmint93/metabase -n metabase \
+          --set database.host=${{ secrets.RDS_ENDPOINT }}, \
+          --set database.dbname=${{ secrets.DB_NAME }}, \
+          --set database.username=${{ secrets.DB_USERNAME }}, \
+          --set database.password=${{ secrets.RDS_PASSWORD }}
