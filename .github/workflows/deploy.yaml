@@ -37,7 +37,7 @@ jobs:
       run: |
         echo "${{ secrets.KUBECONFIG_FILE }}" > kubeconfig.yaml
         export KUBECONFIG=$(pwd)/kubeconfig.yaml
-        kubectl config use-context your-cluster-context
+        kubectl config use-context ${{ secrets.KUBERNETES_CONTEXT_SECRET }}
       env:
         KUBECONFIG: kubeconfig.yaml
 
