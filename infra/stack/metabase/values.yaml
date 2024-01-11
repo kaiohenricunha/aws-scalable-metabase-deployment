@@ -24,5 +24,3 @@ readinessProbe:
   periodSeconds: 5
 service:
   type: LoadBalancer
-listen:
-  port: 3000
