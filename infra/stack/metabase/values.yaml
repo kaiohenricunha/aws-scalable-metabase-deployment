@@ -6,3 +6,10 @@ database:
   dbname: ${{ DB_NAME }}
   username: ${{ DB_USERNAME }}
   password: ${{ RDS_PASSWORD }}
+resources:
+  requests:
+    cpu: 500m
+    memory: 256Mi
+  limits:
+    cpu: 800m
+    memory: 512Mi
