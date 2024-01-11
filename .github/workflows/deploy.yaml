@@ -33,6 +33,13 @@ jobs:
     #   run: |
     #     cd infra/state-backend
     #     terraform init
+    - name: Configure Kubernetes Context
+      run: |
+        echo "${{ secrets.KUBECONFIG_FILE }}" > kubeconfig.yaml
+        export KUBECONFIG=$(pwd)/kubeconfig.yaml
+        kubectl config use-context ${{ secrets.KUBERNETES_CONTEXT_SECRET }}
+      env:
+        KUBECONFIG: kubeconfig.yaml
 
     - name: Terraform Init
       run: |
