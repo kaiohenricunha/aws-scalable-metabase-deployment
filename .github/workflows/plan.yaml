@@ -45,8 +45,9 @@ jobs:
           cd infra
           terraform plan
 
-      - name: Deploy Metabase
+      - name: Helm Template Metabase
         run: |
+          cd infra/stack/metabase
           pwd
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
