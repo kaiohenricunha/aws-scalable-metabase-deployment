@@ -6,6 +6,9 @@ env:
   AWS_DEFAULT_REGION: 'us-west-2'
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_USERNAME: ${{ secrets.DB_USERNAME }}
+  DB_PORT: ${{ secrets.DB_PORT }}
   TF_VAR_db_name: ${{ secrets.DB_NAME }}
   TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
   TF_VAR_db_port: ${{ secrets.DB_PORT }}
