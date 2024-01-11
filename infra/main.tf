@@ -520,6 +520,11 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   set {
+    name  = "vpcId"
+    value = "vpc-0a9520565fbf50ca2"
+  }
+
+  set {
     name  = "clusterName"
     value = module.eks.cluster_name
   }
