@@ -1,4 +1,4 @@
-name: Deploy Stack
+name: Plan Stack
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -30,9 +30,13 @@ jobs:
         with:
           version: v3.7.0
 
-      - name: Deploy Metabase
+      - name: Plan Metabase
         run: |
           cd infra/stack/metabase
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          helm install metabase pmint93/metabase -f values.yaml
+          helm template metabase pmint93/metabase -f values.yaml
+      - name: Store Rendered Manifests
+        run: |
+          mkdir -p rendered-manifests
+          mv metabase/templates/*.yaml rendered-manifests/
