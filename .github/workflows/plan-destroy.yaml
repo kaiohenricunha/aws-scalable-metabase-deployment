@@ -1,4 +1,4 @@
-name: Destroy Infrastructure
+name: Plan Destroy Infrastructure
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  destroy:
+  plan-destroy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
@@ -26,17 +26,7 @@ jobs:
         cd infra
         terraform init
 
-    # Remove Backend State Resources from Terraform State
-    - name: Remove State Entries for Backend Resources
+    - name: Terraform Plan Destroy
       run: |
         cd infra
-        terraform state rm aws_s3_bucket.terraform-state
-        terraform state rm aws_kms_key.terraform-bucket-key
-        terraform state rm aws_kms_alias.key-alias
-        terraform state rm aws_s3_bucket_public_access_block.block
-
-    # Destroy all other Infrastructure
-    - name: Terraform Destroy
-      run: |
-        cd infra
-        terraform destroy -auto-approve
+        terraform plan -destroy -out=plan-destroy

@@ -4,6 +4,9 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-west-2'
+  TF_VAR_db_name: ${{ secrets.DB_NAME }}
+  TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+  TF_VAR_db_port: ${{ secrets.DB_PORT }}
 
 on:
   push:
