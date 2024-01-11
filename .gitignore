@@ -34,3 +34,4 @@ override.tf.json
 terraform.rc
 
 annotations.md
+kubeconfig.yaml
