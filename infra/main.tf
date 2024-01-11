@@ -396,7 +396,7 @@ variable "db_port" {}
 module "db" {
   source = "terraform-aws-modules/rds/aws"
 
-  identifier = "lab-rds"
+  identifier = "labrds"
 
   engine            = "mysql"
   engine_version    = "5.7"
