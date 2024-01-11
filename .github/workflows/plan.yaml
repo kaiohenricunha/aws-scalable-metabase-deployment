@@ -48,7 +48,3 @@ jobs:
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           helm template metabase pmint93/metabase -f values.yaml
-      - name: Store Metabase Rendered Manifests
-        run: |
-          mkdir -p rendered-manifests
-          mv metabase/templates/*.yaml rendered-manifests/
