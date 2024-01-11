@@ -45,9 +45,12 @@ jobs:
           cd infra
           terraform plan
 
+      - name: Prepare Helm values
+        run: |
+          envsubst < infra/stack/metabase/values.yaml.template > infra/stack/metabase/values.yaml
       - name: Plan Metabase
         run: |
           cd infra/stack/metabase
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          helm template metabase pmint93/metabase -f values.yaml
+          helm template metabase pmint93/metabase -f infra/stack/metabase/values.yaml
