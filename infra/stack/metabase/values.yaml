@@ -1,8 +1,8 @@
 replicaCount: 1
 database:
   type: mysql
-  host: ${{ env.RDS_ENDPOINT }}}
-  port: 3306
-  dbname: ${{ env.DB_NAME }}
-  username: ${{ env.DB_USERNAME }}
-  password: ${{ env.RDS_PASSWORD }}
+  host: ${{ RDS_ENDPOINT }}}
+  port: ${{ DB_PORT }}
+  dbname: ${{ DB_NAME }}
+  username: ${{ DB_USERNAME }}
+  password: ${{ RDS_PASSWORD }}
