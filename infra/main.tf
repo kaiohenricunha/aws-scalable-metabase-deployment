@@ -332,7 +332,10 @@ resource "kubectl_manifest" "karpenter_node_pool" {
           nodeClassRef:
             name: default
           requirements:
-            - key: "karpenter.k8s.aws/instance-type"
+            - key: karpenter.sh/capacity-type
+              operator: In
+              values: ["on-demand"]
+            - key: "node.kubernetes.io/instance-type"
               operator: In
               values: ["t2.micro", "t3.micro"]
       limits:
