@@ -45,12 +45,14 @@ jobs:
           cd infra
           terraform plan
 
-      - name: Prepare Helm values
+      - name: Deploy Metabase
         run: |
-          envsubst < stack/metabase/values.yaml.template > stack/metabase/values.yaml
-      - name: Plan Metabase
-        run: |
-          cd stack/metabase
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          helm template metabase pmint93/metabase -f stack/metabase/values.yaml
+          helm template metabase pmint93/metabase -n metabase \
+            -f stack/metabase/values.yaml \
+            --set database.host=${{ secrets.RDS_ENDPOINT }},\
+            --set database.port=${{ secrets.DB_PORT }},\
+            --set database.dbname=${{ secrets.DB_NAME }},\
+            --set database.username=${{ secrets.DB_USERNAME }},\
+            --set database.password=${{ secrets.RDS_PASSWORD }}
