@@ -59,16 +59,16 @@ jobs:
         cd infra
         terraform apply -auto-approve
 
-    - name: Prepare Helm values
-      run: |
-        envsubst < infra/stack/metabase/values.yaml.template > infra/stack/metabase/values.yaml
-    - name: Deploy Metabase
+    - name: Helm Install Metabase
       run: |
         cd infra/stack/metabase
+        pwd
         helm repo add pmint93 https://pmint93.github.io/helm-charts
         helm repo update
         helm install metabase pmint93/metabase -n metabase \
-          --set database.host=${{ secrets.RDS_ENDPOINT }}, \
-          --set database.dbname=${{ secrets.DB_NAME }}, \
-          --set database.username=${{ secrets.DB_USERNAME }}, \
+          -f values.yaml \
+          --set database.host=${{ secrets.RDS_ENDPOINT }},\
+          --set database.port=${{ secrets.DB_PORT }},\
+          --set database.dbname=${{ secrets.DB_NAME }},\
+          --set database.username=${{ secrets.DB_USERNAME }},\
           --set database.password=${{ secrets.RDS_PASSWORD }}
