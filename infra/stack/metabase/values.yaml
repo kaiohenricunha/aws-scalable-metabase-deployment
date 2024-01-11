@@ -1,4 +1,4 @@
-replicaCount: 4
+replicaCount: 1
 database:
   type: mysql
   host: ${{ RDS_ENDPOINT }}
@@ -12,7 +12,7 @@ resources:
     memory: 768Mi
   limits:
     cpu: 800m
-    memory: 900Mi
+    memory: 700Mi
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120

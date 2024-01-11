@@ -246,6 +246,11 @@ module "eks" {
         { namespace = "kube-system" }
       ]
     }
+    metabase = {
+      selectors = [
+        { namespace = "metabase" }
+      ]
+    }
   }
 
   tags = {
@@ -342,7 +347,9 @@ resource "kubectl_manifest" "karpenter_node_pool" {
               operator: In
               values: ["t2.micro", "t3.micro"]
       limits:
-        cpu: 1000
+        cpu: 1
+        memory: 8000Mi
+        pods: 11
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
