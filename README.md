@@ -1,5 +1,6 @@
 # Scaling AWS Metabase with EKS on Fargate and Karpenter
 
+```bash
 .
 |-- README.md
 |-- .github
@@ -13,6 +14,7 @@
 |       |-- main.tf
 |       `-- state.tf
 `-- trimmed.Dockerfile
+```
 
 ## Step 1: Project Setup
 
