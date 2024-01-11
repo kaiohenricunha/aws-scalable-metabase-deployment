@@ -1,4 +1,4 @@
-# Scaling AWS Metabase with EKS on Fargate and Karpenter
+# Scaling Metabase with EKS on Fargate and Karpenter
 
 ```bash
 .
