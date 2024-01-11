@@ -65,7 +65,7 @@ jobs:
         pwd
         helm repo add pmint93 https://pmint93.github.io/helm-charts
         helm repo update
-        helm install metabase pmint93/metabase -n metabase \
+        helm upgrade metabase pmint93/metabase -n metabase \
           -f values.yaml \
           --set database.host=${{ secrets.RDS_ENDPOINT }},\
           --set database.port=${{ secrets.DB_PORT }},\
