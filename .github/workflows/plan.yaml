@@ -47,7 +47,7 @@ jobs:
 
       - name: Prepare Helm values
         run: |
-          envsubst < infra/stack/metabase/values.yaml.template > infra/stack/metabase/values.yaml
+          envsubst < stack/metabase/values.yaml.template > stack/metabase/values.yaml
       - name: Plan Metabase
         run: |
           cd infra/stack/metabase
