@@ -130,10 +130,10 @@ An example deployment using the Kubernetes pause image was included to demonstra
 
 WIP
 
-## Step 4: Metabase Scaling with Keda
+## Step 4: Metabase Access Externalization with ALB Ingress Controller
 
 WIP
 
-## Step 5: Infrastructure and Metabase Monitoring with kube-prometheus-stack
+## Step 5: Metabase Autoscaling with KEDA(HPA)
 
 WIP
