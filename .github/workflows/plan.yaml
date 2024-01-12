@@ -58,10 +58,10 @@ jobs:
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           helm template metabase pmint93/metabase -n metabase \
-            -f values.yaml \
-            --set database.host=${{ secrets.RDS_ENDPOINT }},\
-            --set database.port=${{ secrets.DB_PORT }},\
-            --set database.dbname=${{ secrets.DB_NAME }},\
-            --set database.username=${{ secrets.DB_USERNAME }},\
-            --set database.password=${{ secrets.RDS_PASSWORD }},\
-            --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ steps.get_cert_arn.outputs.acm_certificate_arn }}
+            -f rendered-values.yaml \
+# --set database.host=${{ secrets.RDS_ENDPOINT }},\
+# --set database.port=${{ secrets.DB_PORT }},\
+# --set database.dbname=${{ secrets.DB_NAME }},\
+# --set database.username=${{ secrets.DB_USERNAME }},\
+# --set database.password=${{ secrets.RDS_PASSWORD }},\
+# --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ steps.get_cert_arn.outputs.acm_certificate_arn }}
