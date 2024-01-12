@@ -26,14 +26,6 @@ jobs:
         cd infra
         terraform init
 
-    - name: Remove State Entries for Backend Resources
-      run: |
-        cd infra
-        terraform state rm aws_s3_bucket.terraform-state
-        terraform state rm aws_kms_key.terraform-bucket-key
-        terraform state rm aws_kms_alias.key-alias
-        terraform state rm aws_s3_bucket_public_access_block.block
-
     - name: Terraform Plan Destroy
       run: |
         cd infra
