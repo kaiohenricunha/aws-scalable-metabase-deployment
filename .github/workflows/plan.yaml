@@ -45,16 +45,11 @@ jobs:
           cd infra
           terraform plan
 
-      - name: Get ACM Certificate ARN
-        id: get_cert_arn
-        run: |
-          cd infra
-          echo "::set-output name=acm_certificate_arn::$(terraform output acm_certificate_arn | tr -d '\n')"
-
       - name: Helm Template Metabase
         run: |
           cd infra/stack/metabase
           pwd
+          ls -la infra/stack/metabase/
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           helm template metabase pmint93/metabase -n metabase \
