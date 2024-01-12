@@ -525,6 +525,16 @@ resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_attach" 
   policy_arn = aws_iam_policy.aws_load_balancer_controller_policy.arn
 }
 
+resource "kubernetes_service_account" "aws_load_balancer_controller_sa" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.aws_load_balancer_controller_role.arn
+    }
+  }
+}
+
 resource "helm_release" "aws_load_balancer_controller" {
   name = "aws-load-balancer-controller"
 
@@ -555,7 +565,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "serviceAccount.name"
-    value = "aws-load-balancer-controller"
+    value = kubernetes_service_account.aws_load_balancer_controller_sa.metadata[0].name
   }
 
   set {
