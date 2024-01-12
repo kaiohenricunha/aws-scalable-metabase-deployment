@@ -30,6 +30,8 @@ jobs:
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: "1.5.5"
 
       - name: Install Helm
         uses: azure/setup-helm@v1

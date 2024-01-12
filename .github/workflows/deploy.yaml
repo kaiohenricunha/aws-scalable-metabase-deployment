@@ -43,6 +43,8 @@ jobs:
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: "1.5.5"
 
     # # Apply Backend Configuration
     # - name: Terraform Init in Backend
