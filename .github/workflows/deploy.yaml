@@ -43,8 +43,6 @@ jobs:
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: "1.5.5"
 
     # # Apply Backend Configuration
     # - name: Terraform Init in Backend
@@ -65,9 +63,7 @@ jobs:
       id: get_cert_arn
       run: |
         cd infra
-        arn=$(terraform output -raw acm_certificate_arn)
-        echo "::add-mask::$arn"
-        echo "::set-output name=acm_certificate_arn::$arn"
+        echo "::set-output name=acm_certificate_arn::$(terraform output acm_certificate_arn | tr -d '\n')"
 
     - name: Helm Install Metabase
       run: |
