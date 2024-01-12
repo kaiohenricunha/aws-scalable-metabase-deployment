@@ -595,14 +595,14 @@ resource "aws_route53_record" "metabase_lb" {
 # ACM: TLS Configuration
 ################################################################################
 
-resource "aws_acm_certificate" "metabase_cert" {
-  domain_name       = "metabasekaiolab.com"
-  validation_method = "DNS"
+# resource "aws_acm_certificate" "metabase_cert" {
+#   domain_name       = "metabasekaiolab.com"
+#   validation_method = "DNS"
 
-  lifecycle {
-    create_before_destroy = true
-  }
-}
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
 
 # resource "aws_acm_certificate_validation" "metabase_cert" {
 #   certificate_arn         = aws_acm_certificate.metabase_cert.arn
