@@ -26,7 +26,6 @@ jobs:
         cd infra
         terraform init
 
-    # Remove Backend State Resources from Terraform State
     - name: Remove State Entries for Backend Resources
       run: |
         cd infra
@@ -35,7 +34,6 @@ jobs:
         terraform state rm aws_kms_alias.key-alias
         terraform state rm aws_s3_bucket_public_access_block.block
 
-    # Destroy all other Infrastructure
     - name: Terraform Destroy
       run: |
         cd infra
