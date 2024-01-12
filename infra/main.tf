@@ -490,20 +490,37 @@ module "db" {
 # Load Balancer Controller
 ################################################################################
 
-module "aws_load_balancer_controller_irsa_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "5.3.1"
+resource "aws_iam_policy" "aws_load_balancer_controller_policy" {
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  description = "Policy for AWS Load Balancer Controller on EKS"
 
-  role_name = "aws-load-balancer-controller"
+  policy = file("${path.module}/iam-policy.json")
+}
 
-  attach_load_balancer_controller_policy = true
+resource "aws_iam_role" "aws_load_balancer_controller_role" {
+  name               = "aws-load-balancer-controller-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
 
-  oidc_providers = {
-    one = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:aws-load-balancer-controller"]
+data "aws_iam_policy_document" "assume_role_policy" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    effect  = "Allow"
+    principals {
+      type        = "Federated"
+      identifiers = [module.eks.oidc_provider_arn]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "${module.eks.oidc_provider_url}:sub"
+      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
   }
+}
+
+resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller_attach" {
+  role       = aws_iam_role.aws_load_balancer_controller_role.name
+  policy_arn = aws_iam_policy.aws_load_balancer_controller_policy.arn
 }
 
 resource "helm_release" "aws_load_balancer_controller" {
@@ -527,6 +544,11 @@ resource "helm_release" "aws_load_balancer_controller" {
   set {
     name  = "clusterName"
     value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = false
   }
 
   set {
