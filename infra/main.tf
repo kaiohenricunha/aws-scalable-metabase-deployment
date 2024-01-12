@@ -604,19 +604,19 @@ resource "aws_acm_certificate" "metabase_cert" {
   }
 }
 
-resource "aws_acm_certificate_validation" "metabase_cert" {
-  certificate_arn         = aws_acm_certificate.metabase_cert.arn
-  validation_record_fqdns = [aws_route53_record.metabase_cert_validation.fqdn]
-}
+# resource "aws_acm_certificate_validation" "metabase_cert" {
+#   certificate_arn         = aws_acm_certificate.metabase_cert.arn
+#   validation_record_fqdns = [aws_route53_record.metabase_cert_validation.fqdn]
+# }
 
-resource "aws_route53_record" "metabase_cert_validation" {
-  name    = local.validation_options["metabasekaiolab.com"].resource_record_name
-  type    = local.validation_options["metabasekaiolab.com"].resource_record_type
-  zone_id = aws_route53_zone.main.zone_id
-  records = [local.validation_options["metabasekaiolab.com"].resource_record_value]
-  ttl     = 60
-}
+# resource "aws_route53_record" "metabase_cert_validation" {
+#   name    = local.validation_options["metabasekaiolab.com"].resource_record_name
+#   type    = local.validation_options["metabasekaiolab.com"].resource_record_type
+#   zone_id = aws_route53_zone.main.zone_id
+#   records = [local.validation_options["metabasekaiolab.com"].resource_record_value]
+#   ttl     = 60
+# }
 
-output "acm_certificate_arn" {
-  value = aws_acm_certificate.metabase_cert.arn
-}
+# output "acm_certificate_arn" {
+#   value = aws_acm_certificate.metabase_cert.arn
+# }
