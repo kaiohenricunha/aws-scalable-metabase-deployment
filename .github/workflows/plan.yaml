@@ -49,11 +49,10 @@ jobs:
         run: |
           cd infra/stack/metabase
           pwd
-          ls -la infra/stack/metabase/
+          ls -la
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          helm template metabase pmint93/metabase -n metabase \
-            -f rendered-values.yaml \
+          helm template metabase pmint93/metabase -n metabase -f rendered-values.yaml \
 # --set database.host=${{ secrets.RDS_ENDPOINT }},\
 # --set database.port=${{ secrets.DB_PORT }},\
 # --set database.dbname=${{ secrets.DB_NAME }},\
