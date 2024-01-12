@@ -84,6 +84,8 @@ locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
+  irsa_oidc_provider_url = replace(module.eks.oidc_provider_arn, "/^(.*provider\\/)/", "")
+
   tags = {
     Environment = "lab"
     Example    = local.name
@@ -512,7 +514,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
     }
     condition {
       test     = "StringEquals"
-      variable = "${module.eks.oidc_provider_url}:sub"
+      variable = "${local.irsa_oidc_provider_url}:sub"
       values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
   }
@@ -558,6 +560,6 @@ resource "helm_release" "aws_load_balancer_controller" {
 
   set {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = module.aws_load_balancer_controller_irsa_role.iam_role_arn
+    value = aws_iam_role.aws_load_balancer_controller_role.arn
   }
 }
