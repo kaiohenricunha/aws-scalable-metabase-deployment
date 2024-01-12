@@ -18,6 +18,11 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
+    - name: Install Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.7.0
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
