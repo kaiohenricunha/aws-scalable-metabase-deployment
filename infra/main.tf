@@ -85,6 +85,7 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   irsa_oidc_provider_url = replace(module.eks.oidc_provider_arn, "/^(.*provider\\/)/", "")
+  validation_options = { for dvo in aws_acm_certificate.metabase_cert.domain_validation_options : dvo.domain_name => dvo }
 
   tags = {
     Environment = "lab"
@@ -572,4 +573,50 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = aws_iam_role.aws_load_balancer_controller_role.arn
   }
+}
+
+################################################################################
+# Route53
+################################################################################
+
+resource "aws_route53_zone" "main" {
+  name = "metabasekaiolab.com"
+}
+
+resource "aws_route53_record" "metabase_lb" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "metabasekaiolab.com"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["k8s-metabase-metabase-30bdf9ccdf-836798141.us-west-2.elb.amazonaws.com"]
+}
+
+################################################################################
+# ACM: TLS Configuration
+################################################################################
+
+resource "aws_acm_certificate" "metabase_cert" {
+  domain_name       = "metabasekaiolab.com"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate_validation" "metabase_cert" {
+  certificate_arn         = aws_acm_certificate.metabase_cert.arn
+  validation_record_fqdns = [aws_route53_record.metabase_cert_validation.fqdn]
+}
+
+resource "aws_route53_record" "metabase_cert_validation" {
+  name    = local.validation_options["metabasekaiolab.com"].resource_record_name
+  type    = local.validation_options["metabasekaiolab.com"].resource_record_type
+  zone_id = aws_route53_zone.main.zone_id
+  records = [local.validation_options["metabasekaiolab.com"].resource_record_value]
+  ttl     = 60
+}
+
+output "acm_certificate_arn" {
+  value = aws_acm_certificate.metabase_cert.arn
 }
