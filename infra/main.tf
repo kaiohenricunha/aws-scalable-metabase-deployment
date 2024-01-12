@@ -419,7 +419,7 @@ module "db" {
   engine            = "mysql"
   engine_version    = "5.7"
   instance_class    = "db.t3.micro"
-  allocated_storage = 20
+  allocated_storage = 5
 
   db_name     = var.db_name
   username = var.db_username
