@@ -32,7 +32,7 @@ ingress:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
   hosts:
-    - host: metabasekaiolab.com
+    - metabasekaiolab.com
   path: /
   pathType: Exact
   tls:
