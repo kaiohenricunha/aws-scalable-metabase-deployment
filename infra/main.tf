@@ -85,7 +85,7 @@ locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
   irsa_oidc_provider_url = replace(module.eks.oidc_provider_arn, "/^(.*provider\\/)/", "")
-  validation_options = { for dvo in aws_acm_certificate.metabase_cert.domain_validation_options : dvo.domain_name => dvo }
+  # validation_options = { for dvo in aws_acm_certificate.metabase_cert.domain_validation_options : dvo.domain_name => dvo }
 
   tags = {
     Environment = "lab"
