@@ -620,16 +620,3 @@ resource "aws_route53_record" "metabase_cert_validation" {
 output "acm_certificate_arn" {
   value = aws_acm_certificate.metabase_cert.arn
 }
-
-data "template_file" "helm_values" {
-  template = file("${path.module}/stack/metabase/values.tpl")
-
-  vars = {
-    certificate_arn = aws_acm_certificate.metabase_cert.arn
-  }
-}
-
-resource "local_file" "helm_values_file" {
-  filename = "${path.module}/stack/metabase/rendered_values.yaml"
-  content  = data.template_file.helm_values.rendered
-}

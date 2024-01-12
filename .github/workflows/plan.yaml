@@ -45,17 +45,20 @@ jobs:
           cd infra
           terraform plan
 
-      - name: Helm Template Metabase
+      - name: Set ACM Certificate ARN as Env Var
+        run: echo "ACM_CERTIFICATE_ARN=test.arn" >> $GITHUB_ENV
+
+      - name: Helm Install Metabase
         run: |
           cd infra/stack/metabase
           pwd
-          ls -la
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          helm template metabase pmint93/metabase -n metabase -f rendered-values.yaml \
-# --set database.host=${{ secrets.RDS_ENDPOINT }},\
-# --set database.port=${{ secrets.DB_PORT }},\
-# --set database.dbname=${{ secrets.DB_NAME }},\
-# --set database.username=${{ secrets.DB_USERNAME }},\
-# --set database.password=${{ secrets.RDS_PASSWORD }},\
-# --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ steps.get_cert_arn.outputs.acm_certificate_arn }}
+          helm template metabase pmint93/metabase -n metabase \
+            -f values.yaml \
+            --set database.host=${{ secrets.RDS_ENDPOINT }},\
+            --set database.port=${{ secrets.DB_PORT }},\
+            --set database.dbname=${{ secrets.DB_NAME }},\
+            --set database.username=${{ secrets.DB_USERNAME }},\
+            --set database.password=${{ secrets.RDS_PASSWORD }},\
+            --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ env.ACM_CERTIFICATE_ARN }} \

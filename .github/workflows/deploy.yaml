@@ -59,11 +59,8 @@ jobs:
         cd infra
         terraform apply -auto-approve
 
-    - name: Get ACM Certificate ARN
-      id: get_cert_arn
-      run: |
-        cd infra
-        echo "::set-output name=acm_certificate_arn::$(terraform output acm_certificate_arn | tr -d '\n')"
+    - name: Set ACM Certificate ARN as Env Var
+      run: echo "ACM_CERTIFICATE_ARN=$(terraform output -raw acm_certificate_arn)" >> $GITHUB_ENV
 
     - name: Helm Install Metabase
       run: |
@@ -78,4 +75,4 @@ jobs:
           --set database.dbname=${{ secrets.DB_NAME }},\
           --set database.username=${{ secrets.DB_USERNAME }},\
           --set database.password=${{ secrets.RDS_PASSWORD }},\
-          --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ steps.get_cert_arn.outputs.acm_certificate_arn }}
+          --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ env.ACM_CERTIFICATE_ARN }} \
