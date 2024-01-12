@@ -59,6 +59,14 @@ jobs:
         cd infra
         terraform apply -auto-approve
 
+    - name: Get ACM Certificate ARN
+      id: get_cert_arn
+      run: |
+        cd infra
+        arn=$(terraform output -raw acm_certificate_arn)
+        echo "::add-mask::$arn"
+        echo "::set-output name=acm_certificate_arn::$arn"
+
     - name: Helm Install Metabase
       run: |
         cd infra/stack/metabase
@@ -72,4 +80,4 @@ jobs:
           --set database.dbname=${{ secrets.DB_NAME }},\
           --set database.username=${{ secrets.DB_USERNAME }},\
           --set database.password=${{ secrets.RDS_PASSWORD }}
-          --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ secrets.ACM_CERTIFICATE_ARN }}
+          --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ steps.get_cert_arn.outputs.acm_certificate_arn }}
