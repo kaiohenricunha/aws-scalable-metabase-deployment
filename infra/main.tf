@@ -615,3 +615,7 @@ resource "aws_route53_record" "metabase_cert_validation" {
   records = [aws_acm_certificate.metabase_cert.domain_validation_options[0].resource_record_value]
   ttl     = 60
 }
+
+output "acm_certificate_arn" {
+  value = aws_acm_certificate.metabase_cert.arn
+}

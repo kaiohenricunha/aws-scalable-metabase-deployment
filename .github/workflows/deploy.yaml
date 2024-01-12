@@ -72,3 +72,4 @@ jobs:
           --set database.dbname=${{ secrets.DB_NAME }},\
           --set database.username=${{ secrets.DB_USERNAME }},\
           --set database.password=${{ secrets.RDS_PASSWORD }}
+          --set ingress.annotations."alb\.ingress\.kubernetes\.io/certificate-arn"=${{ secrets.ACM_CERTIFICATE_ARN }}

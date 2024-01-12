@@ -32,7 +32,6 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/certificate-arn: "${aws_acm_certificate.metabase_cert.arn}"
   hosts:
     - metabasekaiolab.com
   path: /
