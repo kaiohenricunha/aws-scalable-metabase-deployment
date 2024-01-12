@@ -18,11 +18,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Install Helm
-      uses: azure/setup-helm@v1
-      with:
-        version: v3.7.0
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
 
@@ -30,14 +25,6 @@ jobs:
       run: |
         cd infra
         terraform init
-
-    - name: Remove State Entries for Backend Resources
-      run: |
-        cd infra
-        terraform state rm aws_s3_bucket.terraform-state
-        terraform state rm aws_kms_key.terraform-bucket-key
-        terraform state rm aws_kms_alias.key-alias
-        terraform state rm aws_s3_bucket_public_access_block.block
 
     - name: Terraform Plan Destroy
       run: |
