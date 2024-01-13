@@ -20,7 +20,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  apply:
     runs-on: ubuntu-latest
 
     steps:
@@ -43,17 +43,9 @@ jobs:
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
-
-    - name: Initialize Terraform at Root
-      run: |
-        terraform init
-
-    - name: Initialize Terraform in Environment
-      run: |
-        cd environments/lab
-        terraform init
     
-    - name: Terraform Plan
+    - name: Terraform Apply
       run: |
         cd environments/lab
+        terraform init
         terraform apply -auto-approve
