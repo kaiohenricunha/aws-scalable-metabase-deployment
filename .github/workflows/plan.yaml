@@ -4,6 +4,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-east-1'
+  EKS_CLUSTER_NAME: 'metabase-lab'
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
   DB_NAME: ${{ secrets.DB_NAME }}
@@ -27,6 +28,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.AWS_DEFAULT_REGION}}
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
       
@@ -37,3 +48,15 @@ jobs:
           ls -la
           terraform init
           terraform plan
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: 'v3.5.4'
+
+      - name: Plan kube-prometheus-stack
+        run: |
+          cd helm/kube-prometheus-stack
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml
