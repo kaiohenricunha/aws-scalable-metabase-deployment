@@ -35,6 +35,5 @@ terraform.rc
 
 annotations.md
 kubeconfig.yaml
-main.tf
 iam-policy.json
 manure
