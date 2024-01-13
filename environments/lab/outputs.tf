@@ -17,3 +17,28 @@ output "intra_subnets" {
   description = "List of IDs of intra subnets"
   value       = module.lab_vpc.intra_subnets
 }
+
+output "cluster_certificate_authority_data" {
+  description = "The eks_fargate_karpenter cluster certificate authority data."
+  value       = module.eks_fargate_karpenter.cluster_certificate_authority_data
+}
+
+output "cluster_endpoint" {
+  description = "The eks_fargate_karpenter cluster endpoint."
+  value       = module.eks_fargate_karpenter.cluster_endpoint
+}
+
+output "cluster_id" {
+  description = "The eks_fargate_karpenter cluster ID."
+  value       = module.eks_fargate_karpenter.cluster_id
+}
+
+output "cluster_name" {
+  description = "The eks_fargate_karpenter cluster name."
+  value       = module.eks_fargate_karpenter.cluster_name
+}
+
+output "cluster_version" {
+  description = "The eks_fargate_karpenter cluster Kubernetes version."
+  value       = module.eks_fargate_karpenter.cluster_version
+}
