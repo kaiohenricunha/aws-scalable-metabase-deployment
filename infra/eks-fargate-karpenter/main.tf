@@ -199,12 +199,20 @@ resource "kubectl_manifest" "karpenter_provisioner" {
           operator: In
           values: [micro]
       providerRef:
-        name: lab-provider
-    ---
+        name: lab-provisioner
+  YAML
+
+  depends_on = [
+    kubectl_manifest.karpenter_node_class
+  ]
+}
+
+resource "kubectl_manifest" "karpenter_aws_node_template" {
+  yaml_body = <<-YAML
     apiVersion: karpenter.k8s.aws/v1alpha1
     kind: AWSNodeTemplate
     metadata:
-      name: lab-provider
+      name: lab-provisioner
     spec:
       subnetSelector:
         kubernetes.io/cluster/metabase-lab: owned
