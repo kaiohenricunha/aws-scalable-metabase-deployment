@@ -130,7 +130,6 @@ resource "kubectl_manifest" "karpenter_node_class" {
     spec:
       amiFamily: AL2
       role: ${module.karpenter.role_name}
-      instanceProfile: ${module.karpenter.instance_profile_name}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${module.eks.cluster_name}
