@@ -12,9 +12,3 @@ output "cluster_endpoint" {
   description = "The eks_fargate_karpenter cluster endpoint."
   value       = module.eks.cluster_endpoint
 }
-
-# Karpenter specific outputs
-output "karpenter_iam_role_arn" {
-  description = "The IAM role ARN used by Karpenter."
-  value       = module.karpenter.role_arn
-}

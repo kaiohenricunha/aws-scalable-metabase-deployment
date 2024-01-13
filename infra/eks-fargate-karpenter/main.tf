@@ -18,9 +18,9 @@ module "eks" {
   cluster_version                 = var.cluster_version
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
-  vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.vpc.private_subnets
-  control_plane_subnet_ids        = module.vpc.intra_subnets
+  vpc_id                          = var.vpc_id
+  subnet_ids                      = var.subnet_ids
+  control_plane_subnet_ids        = var.control_plane_subnet_ids
   fargate_profiles                = var.fargate_profiles
 
   cluster_addons = {

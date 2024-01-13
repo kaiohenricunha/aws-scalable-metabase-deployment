@@ -23,6 +23,9 @@ module "eks_fargate_karpenter" {
 
   cluster_name             = "metabase-lab"
   cluster_version          = "1.28"
+  vpc_id                   = lab_vpc.vpc_id
+  subnet_ids               = lab_vpc.private_subnets
+  control_plane_subnet_ids = lab_vpc.intra_subnets
 
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney
