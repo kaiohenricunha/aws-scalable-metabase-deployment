@@ -110,7 +110,7 @@ This step involves the configuration of GitHub workflows to automate the testing
 
 1. **Create a Terraform user with access keys** in AWS IAM.
 2. **Run `terraform init` in the root folder** to install the required plugins.
-3. **Execute `aws configure`** to set up the AWS CLI to use the access keys locally.
+3. **Execute `aws configure`** to set up the AWS CLI to use the access keys locally. Add the AWS Access Key ID and AWS Secret Access Key to Github Secrets in the repository settings.
 4. **Navigate to `environments/lab/s3-dynamodb` and run `terraform init`** to initialize the terraform state.
 5. **Execute `terraform plan`** to review what resources will be created.
 6. **Run `terraform apply`** to create the resources, including the s3 bucket and dynamodb table. Ensure the bucket name is unique to avoid errors. If working in a docker environment without live file system sync, rebuild the container to reflect new files.
