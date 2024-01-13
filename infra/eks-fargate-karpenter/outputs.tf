@@ -8,6 +8,11 @@ output "cluster_arn" {
   value       = module.eks.cluster_arn
 }
 
+output "cluster_endpoint" {
+  description = "The eks_fargate_karpenter cluster endpoint."
+  value       = module.eks.cluster_endpoint
+}
+
 # Karpenter specific outputs
 output "karpenter_iam_role_arn" {
   description = "The IAM role ARN used by Karpenter."
