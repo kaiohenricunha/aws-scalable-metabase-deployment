@@ -33,6 +33,11 @@ module "eks_fargate_karpenter" {
   }
 
   fargate_profiles = {
+    karpenter = {
+      selectors = [
+        { namespace = "karpenter" }
+      ]
+    }
     kube-system = {
       selectors = [
         { namespace = "kube-system" }
