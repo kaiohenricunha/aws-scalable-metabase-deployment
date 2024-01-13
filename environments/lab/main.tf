@@ -21,13 +21,12 @@ module "lab_vpc" {
 module "eks_fargate_karpenter" {
   source = "../../infra/eks-fargate-karpenter"
 
-  providers = {
-    kubectl = "gavinbunney/kubectl"
-    version = "~> 1.14.0"
-  }
-
   cluster_name             = "metabase-lab"
   cluster_version          = "1.28"
+
+  providers = {
+    kubectl = kubectl.gavinbunney
+  }
 
   fargate_profiles = {
     karpenter = {
