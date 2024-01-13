@@ -115,62 +115,26 @@ This step involves the configuration of GitHub workflows to automate the testing
 5. **Execute `terraform plan`** to review what resources will be created.
 6. **Run `terraform apply`** to create the resources, including the s3 bucket and dynamodb table. Ensure the bucket name is unique to avoid errors. If working in a docker environment without live file system sync, rebuild the container to reflect new files.
 
-## Step 2: AWS Core Infrastructure
+## Step 2: AWS Core Infrastructure with EKS on Fargate and Karpenter
 
 ### AWS Infrastructure Configuration with Terraform
 
-Following the setup of the local Docker environment and S3 backend, the next step involved configuring AWS infrastructure using Terraform.
-
-#### VPC and EKS on Fargate Configuration
+Following the setup of the local Docker environment and S3 backend, the next step involved configuring the core AWS infrastructure using Terraform.
 
 1. **VPC Creation:** 
-   - A VPC named `lab-vpc` with a CIDR block of `10.0.0.0/16` was created, providing isolated network space.
-   - Subnets were established across three Availability Zones for high availability and fault tolerance.
+   - A VPC named `lab-vpc` was created, providing isolated network space. The lab environment used the infra/vpc module to do this.
+   - Subnets were established across 2 Availability Zones for high availability and fault tolerance.
 
-2. **EKS Cluster Setup on Fargate:**
+2. **EKS Cluster Setup on Fargate and Karpenter:**
    - An EKS cluster named `eks-lab` was created, leveraging the latest Kubernetes version for enhanced features and security.
-   - Fargate was used for the Kubernetes nodes, offering serverless compute for Kubernetes, eliminating the need to manage servers and scaling.
-   - Fargate provides a flexible, right-sized compute, automatically scaling compute capacity to meet the demands of the application.
+   - Fargate was used as an option for the Kubernetes nodes, offering serverless compute for Kubernetes. It can be useful to run pods that require less than the minimum EC2 instance size of the smallest available instance type.
+   - Karpeneter was deployed to manage the autoscaling of the EKS cluster with a NodePool consisting of free-tier EC2 instances and Fargate pods only.
 
-#### Karpenter Autoscaling Configuration
+With this configuration, when the cluster needs to scale, Karpenter can choose to either spin up traditional EC2 instances(`t2.micro` and `t3.micro`) defined in the NodePool or use Fargate pods, depending on the configuration and needs.
 
-Karpenter was deployed to manage the scaling of the EKS cluster. It dynamically provisions the right types and quantities of instances to meet application demands.
+### Deployment Example
 
-   ```bash
-   kubectl get pods -A
-   NAMESPACE     NAME                         READY   STATUS    RESTARTS   AGE
-   karpenter     karpenter-6bc76db9dc-6hthc   1/1     Running   0          3h27m
-   karpenter     karpenter-6bc76db9dc-wjctv   1/1     Running   0          3h27m
-   kube-system   coredns-f7465cdb6-m6cp4      1/1     Running   0          3h23m
-   kube-system   coredns-f7465cdb6-zqc6l      1/1     Running   0          3h23m
-   ```
-
-   ```bash
-   kubectl get nodes
-   NAME                                                 STATUS   ROLES    AGE     VERSION
-   fargate-ip-10-0-143-34.us-west-2.compute.internal    Ready    <none>   3h22m   v1.28.3-eks-4f4795d
-   fargate-ip-10-0-149-233.us-west-2.compute.internal   Ready    <none>   3h22m   v1.28.3-eks-4f4795d
-   fargate-ip-10-0-17-170.us-west-2.compute.internal    Ready    <none>   3h26m   v1.28.3-eks-4f4795d
-   fargate-ip-10-0-53-167.us-west-2.compute.internal    Ready    <none>   3h26m   v1.28.3-eks-4f4795d
-   ```
-
-1. **Karpenter Setup:**
-   - Karpenter was configured to create EC2 instances as needed, based on application load, ensuring cost-effective scaling.
-   - The Karpenter module in Terraform was used for seamless integration with the AWS EKS cluster.
-
-2. **Node Pool and Node Class:**
-   - Node Pool and EC2 Node Class resources were declared to define instance types and requirements for workload deployment.
-
-This way, when the cluster needs to scale, Karpenter can choose to either spin up traditional EC2 instances(`t2.micro` and `t3.micro`) or use Fargate pods, depending on the configuration and needs.
-
-#### Deployment Example
-
-An example deployment using the Kubernetes pause image was included to demonstrate Karpenter's scaling capabilities. This deployment initially started with zero replicas, scaling up as needed.
-
-#### Future Considerations for `infra/main.tf`
-
-- The `infra/main.tf` file will eventually need to be broken down into smaller, more manageable modules.
-- In case I need  to destroy the infrastructure, it would be ideal to do it in a decoupled manner, destroying the EKS cluster first, then the VPC, and finally the S3 bucket and the state.
+An example deployment using the Kubernetes pause image was included to demonstrate Karpenter's scaling capabilities. This deployment initially start with zero replicas, scaling up as needed.
 
 ## Step 3: Metabase Deployment
 
