@@ -22,7 +22,8 @@ module "eks_fargate_karpenter" {
   source = "../../infra/eks-fargate-karpenter"
 
   providers = {
-    kubectl = gavinbunney/kubectl
+    kubectl = "gavinbunney/kubectl"
+    version = "~> 1.14.0"
   }
 
   cluster_name             = "metabase-lab"
