@@ -41,4 +41,5 @@ jobs:
       
       - name: Terraform Plan
         run: |
+          cd environments/lab
           terraform plan
