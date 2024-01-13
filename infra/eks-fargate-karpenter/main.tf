@@ -1,3 +1,15 @@
+terraform {
+  required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14.0"
+      configuration_aliases = [kubectl.gavinbunney]
+    }
+  }
+
+  required_version = "~> 1.0"
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.21.0"
