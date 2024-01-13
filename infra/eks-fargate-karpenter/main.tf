@@ -177,6 +177,46 @@ resource "kubectl_manifest" "karpenter_node_pool" {
   ]
 }
 
+resource "kubectl_manifest" "karpenter_provisioner" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1alpha5
+    kind: Provisioner
+    metadata:
+      name: default
+    spec:
+      ttlSecondsAfterEmpty: 60 # scale down nodes after 60 seconds without workloads (excluding daemons)
+      ttlSecondsUntilExpired: 86400 # expire nodes after 1 day (in seconds)
+      limits:
+        resources:
+          cpu: 100
+      requirements:
+        # Include general purpose instance families
+        - key: karpenter.k8s.aws/instance-family
+          operator: In
+          values: [t2, t3]
+        # Include micro instance sizes
+        - key: karpenter.k8s.aws/instance-size
+          operator: In
+          values: [micro]
+      providerRef:
+        name: lab-provider
+    ---
+    apiVersion: karpenter.k8s.aws/v1alpha1
+    kind: AWSNodeTemplate
+    metadata:
+      name: lab-provider
+    spec:
+      subnetSelector:
+        kubernetes.io/cluster/metabase-lab: owned
+      securityGroupSelector:
+        kubernetes.io/cluster/metabase-lab: owned
+  YAML
+
+  depends_on = [
+    kubectl_manifest.karpenter_node_class
+  ]
+}
+
 # Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
 # and starts with zero replicas
 resource "kubectl_manifest" "karpenter_example_deployment" {
