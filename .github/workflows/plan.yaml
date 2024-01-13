@@ -33,5 +33,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd environments/lab
+          pwd
+          ls -la
           terraform init
           terraform plan
