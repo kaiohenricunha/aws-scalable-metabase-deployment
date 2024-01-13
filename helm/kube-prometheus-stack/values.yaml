@@ -2,14 +2,13 @@ kubeStateMetrics:
   enabled: true
   kube-state-metrics:
     replicas: 2
-    global:
-      resources:
-        limits:
-          cpu: 100m
-          memory: 64Mi
-        requests:
-          cpu: 10m
-          memory: 32Mi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
 grafana:
   enabled: true
   global:
