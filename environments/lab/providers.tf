@@ -46,7 +46,7 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes {
-    host                   = module.eks.cluster_endpoint
+    host                   = module.eks_fargate_karpenter.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks_fargate_karpenter.cluster_certificate_authority_data)
 
     exec {
