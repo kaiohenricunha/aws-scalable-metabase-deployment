@@ -13,11 +13,6 @@ variable "fargate_profiles" {
   type        = map(any)
 }
 
-variable "providers" {
-  description = "Provider configurations"
-  type        = map(any)
-}
-
 variable "vpc_id" {
   description = "The ID of the VPC"
   type        = string
