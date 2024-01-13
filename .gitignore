@@ -35,3 +35,5 @@ terraform.rc
 
 annotations.md
 kubeconfig.yaml
+iam-policy.json
+manure

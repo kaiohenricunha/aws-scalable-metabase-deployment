@@ -2,27 +2,59 @@
 
 ```bash
 .
-|-- README.md
 |-- .github
-|   |-- workflows
-|       |-- plan_infra.yml
-|       |-- deploy_infra.yml
-|       |-- destroy_infra.yml
-|-- infra
-|   |-- main.tf
-|   `-- state-backend
+|   `-- workflows
+|       |-- apply.yaml
+|       `-- plan.yaml
+|-- README.md
+|-- environments
+|   |-- dev
+|   `-- lab
+|       |-- backend.tf
 |       |-- main.tf
-|       `-- state.tf
-`-- trimmed.Dockerfile
+|       |-- s3-dynamodb
+|       |   |-- main.tf
+|       `-- variables.tf
+|-- helm
+|   |-- keda
+|   |   `-- values.yaml
+|   |-- kube-prometheus-stack
+|   |   `-- values.yaml
+|   `-- metabase
+|       `-- values.yaml
+|-- infra
+|   |-- backend
+|   |   |-- main.tf
+|   |   |-- outputs.tf
+|   |   `-- variables.tf
+|   |-- eks-fargate
+|   |   |-- main.tf
+|   |   `-- outputs.tf
+|   |   `-- variables.tf
+|   |-- karpenter
+|   |   `-- main.tf
+|   |   `-- outputs.tf
+|   |   `-- variables.tf
+|   |-- rds
+|   |   `-- main.tf
+|   |   `-- outputs.tf
+|   |   `-- variables.tf
+|   `-- vpc
+|       |-- main.tf
+|       |-- outputs.tf
+|       `-- variables.tf
+|-- providers.tf
+|-- versions.tf
+|-- trimmed.Dockerfile
 ```
 
-## Step 1: Project Setup
+# Step 1: Project Setup
 
-### Local Docker Environment Setup
+## Local Docker Environment Setup
 
 This phase involves setting up a local Docker environment tailored for SRE/DevOps tasks. The environment includes necessary tools and configurations for infrastructure management and development.
 
-#### Docker Image Configuration
+### Docker Image Configuration
 
 - **Base Image:** Ubuntu latest version.
 - **Included Tools:**
@@ -33,41 +65,55 @@ This phase involves setting up a local Docker environment tailored for SRE/DevOp
   - `k6` from Load Impact for performance testing.
   - Basic utilities like `curl`, `git`, `wget`, `bash-completion`, `software-properties-common`, `groff`, `unzip`, and `tree`.
 
-#### User Setup
+### User Setup
 
 - A non-root user `sre` is created to ensure safer operations within the container.
 - The working directory is set to `/home/sre`.
 
-#### File Permissions
+### File Permissions
 
-- Proper file permissions are set to ensure that the `sre` user.
+- Proper file permissions are set to ensure that the `sre` user can operate effectively.
 
-### Terraform S3 Backend Configuration
+## Terraform Backend Module
 
-The first infrastructure management task involves setting up an S3 bucket to securely store Terraform state files.
+This module sets up an S3 bucket and a DynamoDB table to be used as a Terraform backend.
 
-#### Key Steps:
+### Usage
 
-1. **S3 Bucket Creation:** 
-   - A secure S3 bucket named `kaio-lab-terraform-state` was manually created using the AWS CLI. This bucket is intended for storing Terraform state files.
-   - The bucket is configured with versioning to keep a history of state changes and is set to private to enhance security.
+```hcl
+module "backend" {
+  source              = "./path/to/terraform-backend"
+  region              = "us-east-1"
+  bucket_name         = "my-terraform-state-bucket"
+  dynamodb_table_name = "my-terraform-state-lock"
+}
+```
 
-2. **Terraform Backend Setup:**
-   - Terraform is configured to use this S3 bucket as a backend for state storage.
-   - The backend configuration is defined in the Terraform scripts, pointing to the `kaio-lab-terraform-state` bucket in the `us-west-2` region.
+### Outputs
 
-### GitHub Workflows Configuration
+- `bucket_name`: The name of the created S3 bucket.
+- `dynamodb_table_name`: The name of the created DynamoDB table.
 
-This step finished with the configuration of GitHub workflows to automate the testing and deployment of the AWS infrastructure.
+## GitHub Workflows Configuration
 
-1. **Terraform Plan Workflow:**
-   - A GitHub workflow is created to run `terraform plan` on every pull request to the `main` branch.
-   - Useful for catching errors before merging changes to the main branch.
-2. **Terraform Apply Workflow:**
-   - A GitHub workflow is created to run `terraform apply` on every push to the `main` branch.
-3. **Terraform Destroy Workflow:**
-   - A GitHub workflow is created to run `terraform destroy` when manually triggered only.
-   - It can be later scripted to run based on parameters like `destroyDirs` or `destroyAll`.
+This step involves the configuration of GitHub workflows to automate the testing and deployment of the AWS infrastructure.
+
+### Terraform Plan Workflow
+
+- A GitHub workflow is created to run `terraform plan` on every pull request to the `main` branch, useful for catching errors before merging changes.
+
+### Terraform Apply Workflow
+
+- A GitHub workflow is created to run `terraform apply` on every push to the `main` branch.
+
+## Initial Terraform and AWS Configuration Steps
+
+1. **Create a Terraform user with access keys** in AWS IAM.
+2. **Run `terraform init` in the root folder** to install the required plugins.
+3. **Execute `aws configure`** to set up the AWS CLI to use the access keys locally. Add the AWS Access Key ID and AWS Secret Access Key to Github Secrets in the repository settings.
+4. **Navigate to `environments/lab/s3-dynamodb` and run `terraform init`** to initialize the terraform state.
+5. **Execute `terraform plan`** to review what resources will be created.
+6. **Run `terraform apply`** to create the resources, including the s3 bucket and dynamodb table. Ensure the bucket name is unique to avoid errors. If working in a docker environment without live file system sync, rebuild the container to reflect new files.
 
 ## Step 2: AWS Core Infrastructure
 
