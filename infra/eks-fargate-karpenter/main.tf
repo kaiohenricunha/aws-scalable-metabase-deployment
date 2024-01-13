@@ -199,7 +199,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
           operator: In
           values: [micro]
       providerRef:
-        name: lab-provisioner
+        name: default
   YAML
 
   depends_on = [
@@ -212,12 +212,14 @@ resource "kubectl_manifest" "karpenter_aws_node_template" {
     apiVersion: karpenter.k8s.aws/v1alpha1
     kind: AWSNodeTemplate
     metadata:
-      name: lab-provisioner
+      name: default
     spec:
       subnetSelector:
         karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelector:
         karpenter.sh/discovery: ${module.eks.cluster_name}
+      tags:
+        KarpenerProvisionerName: "default"
   YAML
 
   depends_on = [
