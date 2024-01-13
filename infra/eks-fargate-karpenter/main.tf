@@ -215,9 +215,9 @@ resource "kubectl_manifest" "karpenter_aws_node_template" {
       name: lab-provisioner
     spec:
       subnetSelector:
-        kubernetes.io/cluster/metabase-lab: owned
+        karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelector:
-        kubernetes.io/cluster/metabase-lab: owned
+        karpenter.sh/discovery: ${module.eks.cluster_name}
   YAML
 
   depends_on = [
