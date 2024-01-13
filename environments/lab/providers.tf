@@ -15,7 +15,7 @@ terraform {
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = "~> 1.14.0"
-      configuration_aliases = [gavinbunney.kubectl]
+      configuration_aliases = [kubectl]
     }
   }
 
