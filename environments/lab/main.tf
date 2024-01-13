@@ -25,7 +25,7 @@ module "eks_fargate_karpenter" {
   cluster_version          = "1.28"
 
   providers = {
-    kubectl = kubectl
+    kubectl.gavinbunney = kubectl.gavinbunney
   }
 
   fargate_profiles = {
