@@ -13,7 +13,7 @@ grafana:
   enabled: true
   global:
     autoscaling:
-      enabled: false
+      enabled: true
       minReplicas: 1
       maxReplicas: 5
       targetCPU: "60"
