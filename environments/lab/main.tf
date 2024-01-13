@@ -27,7 +27,6 @@ module "eks_fargate_karpenter" {
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney
     aws.virginia         = aws.virginia
-    region               = aws.virginia
   }
 
   fargate_profiles = {
