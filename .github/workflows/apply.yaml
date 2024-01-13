@@ -47,5 +47,7 @@ jobs:
     - name: Terraform Apply
       run: |
         cd environments/lab
+        pwd
+        ls -la
         terraform init
         terraform apply -auto-approve

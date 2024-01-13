@@ -21,7 +21,7 @@ on:
       - main
 
 jobs:
-  plan-terraform:
+  plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
