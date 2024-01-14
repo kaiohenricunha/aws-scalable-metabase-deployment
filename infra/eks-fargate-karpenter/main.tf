@@ -72,7 +72,7 @@ module "eks" {
 
   tags = {
     Environment = "lab"
-    "karpenter.sh/discovery/metabase-lab" = var.cluster_name
+    "karpenter.sh/discovery" = var.cluster_name
   }
 }
 
@@ -129,15 +129,13 @@ resource "kubectl_manifest" "karpenter_node_class" {
       name: default
     spec:
       amiFamily: AL2
-      role: ${module.karpenter.role_name}
+      role: "KarpenterNodeRole-${module.eks.cluster_name}"
       subnetSelectorTerms:
         - tags:
-            karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
+            karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelectorTerms:
         - tags:
-            karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
-      tags:
-        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
+            karpenter.sh/discovery: ${module.eks.cluster_name}
   YAML
 
   depends_on = [
@@ -163,10 +161,11 @@ resource "kubectl_manifest" "karpenter_node_pool" {
             - key: "node.kubernetes.io/instance-type"
               operator: In
               values: ["t2.micro", "t3.micro"]
+      # Resource limits constrain the total size of the cluster.
+      # Limits prevent Karpenter from creating new instances once the limit is exceeded.
       limits:
-        cpu: 1
-        memory: 8000Mi
-        pods: 11
+        cpu: "1000"
+        memory: 1000Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -187,8 +186,11 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       ttlSecondsAfterEmpty: 60 # scale down nodes after 60 seconds without workloads (excluding daemons)
       ttlSecondsUntilExpired: 86400 # expire nodes after 1 day (in seconds)
       limits:
-        resources:
-          cpu: 100
+        # Resource limits constrain the total size of the cluster.
+        # Limits prevent Karpenter from creating new instances once the limit is exceeded.
+        limits:
+          cpu: "1000"
+          memory: 1000Gi
       requirements:
         # Include general purpose instance families
         - key: karpenter.k8s.aws/instance-family
@@ -215,9 +217,9 @@ resource "kubectl_manifest" "karpenter_aws_node_template" {
       name: default
     spec:
       subnetSelector:
-        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
+        karpenter.sh/discovery: ${module.eks.cluster_name}
       securityGroupSelector:
-        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
+        karpenter.sh/discovery: ${module.eks.cluster_name}
       tags:
         KarpenerProvisionerName: "default"
   YAML
