@@ -174,6 +174,8 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
+      kubelet:
+        maxPods: 11
   YAML
 
   depends_on = [
@@ -207,6 +209,8 @@ resource "kubectl_manifest" "karpenter_provisioner" {
           values: [micro]
       providerRef:
         name: default
+      kubeletConfiguration:
+        maxPods: 11
   YAML
 
   depends_on = [
