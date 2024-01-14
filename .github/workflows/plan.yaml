@@ -54,6 +54,12 @@ jobs:
         with:
           version: 'v3.5.4'
 
+      - name: Plan Metrics Server
+        run: |
+          helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+          helm repo update
+          helm template metrics-server metrics-server/metrics-server
+
       - name: Plan kube-prometheus-stack
         run: |
           cd helm/kube-prometheus-stack
