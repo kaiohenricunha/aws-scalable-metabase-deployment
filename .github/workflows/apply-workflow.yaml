@@ -63,7 +63,7 @@ jobs:
     
     - name: Helm Install Karpenter CRDs
       run: |
-        helm upgrade --install karpenter-crd oci://public.ecr.aws/karpenter/karpenter-crd --version v0.32.5 --namespace karpenter --create-namespace
+        helm upgrade --install karpenter-crd oci://public.ecr.aws/karpenter/karpenter-crd --version 0.32.5 --namespace karpenter --create-namespace
 
     - name: Terraform Apply Karpenter
       run: |
