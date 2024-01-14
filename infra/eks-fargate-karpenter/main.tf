@@ -80,8 +80,10 @@ module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
   cluster_name           = module.eks.cluster_name
+
   irsa_oidc_provider_arn = module.eks.oidc_provider_arn
-  enable_karpenter_instance_profile_creation = true
+  irsa_namespace_service_accounts = ["karpenter:karpenter"]
+
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
