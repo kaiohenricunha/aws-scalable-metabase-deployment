@@ -17,9 +17,6 @@ env:
   TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       helm_action:
