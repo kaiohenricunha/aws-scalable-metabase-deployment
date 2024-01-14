@@ -72,7 +72,7 @@ module "eks" {
 
   tags = {
     Environment = "lab"
-    "karpenter.sh/discovery" = var.cluster_name
+    "karpenter.sh/discovery/metabase-lab" = var.cluster_name
   }
 }
 
@@ -132,12 +132,12 @@ resource "kubectl_manifest" "karpenter_node_class" {
       role: ${module.karpenter.role_name}
       subnetSelectorTerms:
         - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
+            karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
       securityGroupSelectorTerms:
         - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
+            karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
       tags:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
+        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
   YAML
 
   depends_on = [
@@ -215,9 +215,9 @@ resource "kubectl_manifest" "karpenter_aws_node_template" {
       name: default
     spec:
       subnetSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
+        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
       securityGroupSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
+        karpenter.sh/discovery/metabase-lab: ${module.eks.cluster_name}
       tags:
         KarpenerProvisionerName: "default"
   YAML

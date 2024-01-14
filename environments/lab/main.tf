@@ -11,7 +11,7 @@ module "lab_vpc" {
     Environment = "lab"
     GithubRepo = "aws-scalable-metabase-deployment"
     GithubOrg  = "kaiohenricunha"
-    "karpenter.sh/discovery": "metabase-lab"
+    "karpenter.sh/discovery/metabase-lab": "metabase-lab"
   }
 }
 
