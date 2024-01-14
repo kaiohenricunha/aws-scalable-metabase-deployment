@@ -60,6 +60,10 @@ jobs:
       uses: azure/setup-helm@v1
       with:
         version: 'v3.5.4'
+    
+    # Logout of helm registry to perform an unauthenticated pull against the public ECR
+    - name: Helm Registry Logout
+      run: helm registry logout public.ecr.aws
 
     - name: Helm Install Karpenter CRDs
       run: |
