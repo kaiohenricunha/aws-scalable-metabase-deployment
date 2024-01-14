@@ -22,8 +22,8 @@ on:
     inputs:
       action:
         description: 'Action to perform (apply/destroy)'
-        required: false
-        default: 'apply'
+        required: true
+        default: 'destroy'
 
 jobs:
   manage:
