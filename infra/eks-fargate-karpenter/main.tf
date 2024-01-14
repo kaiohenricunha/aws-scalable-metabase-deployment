@@ -121,113 +121,113 @@ resource "helm_release" "karpenter" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_class" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1beta1
-    kind: EC2NodeClass
-    metadata:
-      name: default
-    spec:
-      amiFamily: AL2
-      role: "KarpenterNodeRole-${module.eks.cluster_name}"
-      subnetSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-  YAML
+# resource "kubectl_manifest" "karpenter_node_class" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.k8s.aws/v1beta1
+#     kind: EC2NodeClass
+#     metadata:
+#       name: default
+#     spec:
+#       amiFamily: AL2
+#       role: "KarpenterNodeRole-${module.eks.cluster_name}"
+#       subnetSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#       securityGroupSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#   YAML
 
-  depends_on = [
-    helm_release.karpenter
-  ]
-}
+#   depends_on = [
+#     helm_release.karpenter
+#   ]
+# }
 
-resource "kubectl_manifest" "karpenter_node_pool" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1beta1
-    kind: NodePool
-    metadata:
-      name: default
-    spec:
-      template:
-        spec:
-          nodeClassRef:
-            name: default
-          requirements:
-            - key: karpenter.sh/capacity-type
-              operator: In
-              values: ["on-demand"]
-            - key: "node.kubernetes.io/instance-type"
-              operator: In
-              values: ["t2.micro", "t3.micro"]
-      # Resource limits constrain the total size of the cluster.
-      # Limits prevent Karpenter from creating new instances once the limit is exceeded.
-      limits:
-        cpu: "1000"
-        memory: 1000Gi
-      disruption:
-        consolidationPolicy: WhenEmpty
-        consolidateAfter: 30s
-  YAML
+# resource "kubectl_manifest" "karpenter_node_pool" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.sh/v1beta1
+#     kind: NodePool
+#     metadata:
+#       name: default
+#     spec:
+#       template:
+#         spec:
+#           nodeClassRef:
+#             name: default
+#           requirements:
+#             - key: karpenter.sh/capacity-type
+#               operator: In
+#               values: ["on-demand"]
+#             - key: "node.kubernetes.io/instance-type"
+#               operator: In
+#               values: ["t2.micro", "t3.micro"]
+#       # Resource limits constrain the total size of the cluster.
+#       # Limits prevent Karpenter from creating new instances once the limit is exceeded.
+#       limits:
+#         cpu: "1000"
+#         memory: 1000Gi
+#       disruption:
+#         consolidationPolicy: WhenEmpty
+#         consolidateAfter: 30s
+#   YAML
 
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
+#   depends_on = [
+#     kubectl_manifest.karpenter_node_class
+#   ]
+# }
 
-resource "kubectl_manifest" "karpenter_provisioner" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1alpha5
-    kind: Provisioner
-    metadata:
-      name: default
-    spec:
-      ttlSecondsAfterEmpty: 60 # scale down nodes after 60 seconds without workloads (excluding daemons)
-      ttlSecondsUntilExpired: 86400 # expire nodes after 1 day (in seconds)
-      limits:
-        # Resource limits constrain the total size of the cluster.
-        # Limits prevent Karpenter from creating new instances once the limit is exceeded.
-        limits:
-          cpu: "1000"
-          memory: 1000Gi
-      requirements:
-        # Include general purpose instance families
-        - key: karpenter.k8s.aws/instance-family
-          operator: In
-          values: [t2, t3]
-        # Include micro instance sizes
-        - key: karpenter.k8s.aws/instance-size
-          operator: In
-          values: [micro]
-      providerRef:
-        name: default
-  YAML
+# resource "kubectl_manifest" "karpenter_provisioner" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.sh/v1alpha5
+#     kind: Provisioner
+#     metadata:
+#       name: default
+#     spec:
+#       ttlSecondsAfterEmpty: 60 # scale down nodes after 60 seconds without workloads (excluding daemons)
+#       ttlSecondsUntilExpired: 86400 # expire nodes after 1 day (in seconds)
+#       limits:
+#         # Resource limits constrain the total size of the cluster.
+#         # Limits prevent Karpenter from creating new instances once the limit is exceeded.
+#         limits:
+#           cpu: "1000"
+#           memory: 1000Gi
+#       requirements:
+#         # Include general purpose instance families
+#         - key: karpenter.k8s.aws/instance-family
+#           operator: In
+#           values: [t2, t3]
+#         # Include micro instance sizes
+#         - key: karpenter.k8s.aws/instance-size
+#           operator: In
+#           values: [micro]
+#       providerRef:
+#         name: default
+#   YAML
 
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
+#   depends_on = [
+#     kubectl_manifest.karpenter_node_class
+#   ]
+# }
 
-resource "kubectl_manifest" "karpenter_aws_node_template" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1alpha1
-    kind: AWSNodeTemplate
-    metadata:
-      name: default
-    spec:
-      subnetSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelector:
-        karpenter.sh/discovery: ${module.eks.cluster_name}
-      tags:
-        KarpenerProvisionerName: "default"
-  YAML
+# resource "kubectl_manifest" "karpenter_aws_node_template" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.k8s.aws/v1alpha1
+#     kind: AWSNodeTemplate
+#     metadata:
+#       name: default
+#     spec:
+#       subnetSelector:
+#         karpenter.sh/discovery: ${module.eks.cluster_name}
+#       securityGroupSelector:
+#         karpenter.sh/discovery: ${module.eks.cluster_name}
+#       tags:
+#         KarpenerProvisionerName: "default"
+#   YAML
 
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
+#   depends_on = [
+#     kubectl_manifest.karpenter_node_class
+#   ]
+# }
 
 # Example deployment using the [pause image](https://www.ianlewis.org/en/almighty-pause-container)
 # and starts with zero replicas
