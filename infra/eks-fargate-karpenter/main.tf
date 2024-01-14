@@ -121,27 +121,27 @@ resource "helm_release" "karpenter" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_node_class" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1beta1
-    kind: EC2NodeClass
-    metadata:
-      name: default
-    spec:
-      amiFamily: AL2
-      role: "KarpenterNodeRole-${module.eks.cluster_name}"
-      subnetSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-      securityGroupSelectorTerms:
-        - tags:
-            karpenter.sh/discovery: ${module.eks.cluster_name}
-  YAML
+# resource "kubectl_manifest" "karpenter_node_class" {
+#   yaml_body = <<-YAML
+#     apiVersion: karpenter.k8s.aws/v1beta1
+#     kind: EC2NodeClass
+#     metadata:
+#       name: default
+#     spec:
+#       amiFamily: AL2
+#       role: "KarpenterNodeRole-${module.eks.cluster_name}"
+#       subnetSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#       securityGroupSelectorTerms:
+#         - tags:
+#             karpenter.sh/discovery: ${module.eks.cluster_name}
+#   YAML
 
-  depends_on = [
-    helm_release.karpenter
-  ]
-}
+#   depends_on = [
+#     helm_release.karpenter
+#   ]
+# }
 
 resource "kubectl_manifest" "karpenter_node_pool" {
   yaml_body = <<-YAML
