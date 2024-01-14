@@ -46,21 +46,87 @@ jobs:
         with:
           version: 'v3.5.4'
 
-      - name: Helm Operation
+      - name: Helm Operation for Metrics Server
         run: |
           helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
+          cd helm/metrics-server
           if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
-            helm template metrics-server metrics-server/metrics-server --namespace kube-system
-            cd helm/kube-prometheus-stack
-            helm template kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values
+            helm template metrics-server . --namespace kube-system -f values.yaml
           elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
-            helm install metrics-server metrics-server/metrics-server --namespace kube-system
-            cd helm/kube-prometheus-stack
-            helm install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values
+            helm install metrics-server . --namespace kube-system -f values.yaml
           elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
             helm uninstall metrics-server --namespace kube-system
-            cd helm/kube-prometheus-stack
+          fi
+
+      - name: Helm Operation for Kube-Prometheus-Stack
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          cd helm/kube-prometheus-stack
+          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
+            helm template kube-prometheus-stack . --namespace monitoring -f values.yaml
+          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
+            helm install kube-prometheus-stack . --namespace monitoring -f values.yaml
+          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
             helm uninstall kube-prometheus-stack --namespace monitoring
           fi
+
+      - name: Helm Operation for Metabase
+        run: |
+          helm repo add pmint93 https://pmint93.github
+          .github.io/helm-charts
+          helm repo update
+          cd helm/metabase
+          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
+            helm template metabase pmint93/metabase --namespace metabase -f values.yaml \
+              --set database.host=${{ secrets.RDS_ENDPOINT }},\
+              --set database.port=${{ secrets.DB_PORT }},\
+              --set database.dbname=${{ secrets.DB_NAME }},\
+              --set database.username=${{ secrets.DB_USERNAME }},\
+              --set database.password=${{ secrets.RDS_PASSWORD }}
+          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
+            helm install metabase pmint93/metabase --namespace metabase -f values.yaml \
+              --set database.host=${{ secrets.RDS_ENDPOINT }},\
+              --set database.port=${{ secrets.DB_PORT }},\
+              --set database.dbname=${{ secrets.DB_NAME }},\
+              --set database.username=${{ secrets.DB_USERNAME }},\
+              --set database.password=${{ secrets.RDS_PASSWORD }}
+          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
+            helm uninstall metabase --namespace metabase
+          fi
+
+      # Helm Operation for KEDA
+      - name: Helm Operation for KEDA
+        run: |
+          helm repo add kedacore https://kedacore.github.io/charts
+          helm repo update
+          cd helm/keda
+          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
+            helm template keda kedacore/keda --namespace keda -f values.yaml
+          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
+            helm install keda kedacore/keda --namespace keda -f values.yaml
+          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
+            # Delete any ScaledObjects and ScaledJobs
+            kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}') || true
+            # Uninstall KEDA Helm chart
+            helm uninstall keda -n keda || true
+            # Patch resources if they are orphaned
+            for i in $(kubectl get scaledobjects -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
+            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
+            done
+            for i in $(kubectl get scaledjobs -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
+            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
+            done
+          fi
+
+      - name: Install Istio CLI
+        run: |
+          curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.10.0 sh -
+          echo "$HOME/istio-1.10.0/bin" >> $GITHUB_PATH
+
+      - name: Install Istio
+        run: istioctl manifest install
