@@ -22,7 +22,7 @@ on:
     inputs:
       action:
         description: 'Action to perform (apply/destroy)'
-        required: true
+        required: false
         default: 'apply'
 
 jobs:
@@ -47,8 +47,9 @@ jobs:
       run: |
         cd environments/lab
         terraform init
-        if [ "${{ github.event.inputs.action }}" == "apply" ]; then
-          terraform apply -auto-approve
-        elif [ "${{ github.event.inputs.action }}" == "destroy" ]; then
+        action=${{ github.event.inputs.action }}
+        if [ "$action" == "destroy" ]; then
           terraform destroy -auto-approve
+        else
+          terraform apply -auto-approve
         fi
