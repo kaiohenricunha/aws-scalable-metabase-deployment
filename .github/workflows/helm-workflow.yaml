@@ -62,27 +62,16 @@ jobs:
           .github.io/helm-charts
           helm repo update
           cd helm/metabase
-          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
-            helm template metabase pmint93/metabase --namespace metabase -f values.yaml \
+            helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
               --set database.host=${{ secrets.RDS_ENDPOINT }},\
               --set database.port=${{ secrets.DB_PORT }},\
               --set database.dbname=${{ secrets.DB_NAME }},\
               --set database.username=${{ secrets.DB_USERNAME }},\
               --set database.password=${{ secrets.RDS_PASSWORD }}
-          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
-            helm install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
-              --set database.host=${{ secrets.RDS_ENDPOINT }},\
-              --set database.port=${{ secrets.DB_PORT }},\
-              --set database.dbname=${{ secrets.DB_NAME }},\
-              --set database.username=${{ secrets.DB_USERNAME }},\
-              --set database.password=${{ secrets.RDS_PASSWORD }}
-          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
-            helm uninstall metabase --namespace metabase
-          fi
 
-      - name: Istio injection for Metabase
-        run: |
-          kubectl label namespace metabase istio-injection=enabled
+      # - name: Istio injection for Metabase
+      #   run: |
+      #     kubectl label namespace metabase istio-injection=enabled
 
       # Helm Operation for KEDA
       - name: Helm Operation for KEDA
@@ -90,23 +79,5 @@ jobs:
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo update
           cd helm/keda
-          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
-            helm template keda kedacore/keda --namespace keda -f values.yaml
-          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
             helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
-          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
-            # Delete any ScaledObjects and ScaledJobs
-            kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A \
-              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}') || true
-            # Uninstall KEDA Helm chart
-            helm uninstall keda -n keda || true
-            # Patch resources if they are orphaned
-            for i in $(kubectl get scaledobjects -A \
-              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
-            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
-            done
-            for i in $(kubectl get scaledjobs -A \
-              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
-            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
-            done
-          fi
+
