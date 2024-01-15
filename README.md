@@ -135,15 +135,3 @@ With this configuration, when the cluster needs to scale, Karpenter can choose t
 ### Deployment Example
 
 An example deployment using the Kubernetes pause image was included to demonstrate Karpenter's scaling capabilities. This deployment initially start with zero replicas, scaling up as needed.
-
-## Step 3: Metabase Deployment
-
-WIP
-
-## Step 4: Metabase Access Externalization with ALB Ingress Controller
-
-WIP
-
-## Step 5: Metabase Autoscaling with KEDA(HPA)
-
-WIP
