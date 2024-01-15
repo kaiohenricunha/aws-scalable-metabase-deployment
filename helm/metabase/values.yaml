@@ -1,4 +1,3 @@
-replicaCount: 1
 database:
   type: mysql
   host: ${{ RDS_ENDPOINT }}
