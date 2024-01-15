@@ -77,9 +77,9 @@ jobs:
             --set database.password=${{ secrets.RDS_PASSWORD }}
           kubectl apply -f scaledobject.yaml
 
-      - name: Istio injection for Metabase
-        run: |
-          kubectl label namespace metabase istio-injection=enabled
+      # - name: Istio injection for Metabase
+      #   run: |
+      #     kubectl label namespace metabase istio-injection=enabled
 
       # Helm Operation for KEDA
       - name: Helm install KEDA
