@@ -5,27 +5,13 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-east-1'
   EKS_CLUSTER_NAME: 'metabase-lab'
-  RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-  RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-  DB_NAME: ${{ secrets.DB_NAME }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-  TF_VAR_db_name: ${{ secrets.DB_NAME }}
-  TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-  TF_VAR_db_port: ${{ secrets.DB_PORT }}
-  TF_VAR_rds_endpoint: ${{ secrets.RDS_ENDPOINT }}
-  TF_VAR_rds_password: ${{ secrets.RDS_PASSWORD }}
+  TF_VAR_db_password: ${{ secrets.RDS_PASSWORD }}
 
 on:
   pull_request:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      plan_type:
-        description: 'Type of Terraform plan (regular/destroy)'
-        required: true
-        default: 'regular'
 
 jobs:
   plan:
@@ -49,12 +35,22 @@ jobs:
           cd environments/lab
           terraform init
 
-      - name: Terraform Plan
+      - name: Terraform Plan VPC
         run: |
           cd environments/lab
-          terraform init
-          if [ "${{ github.event.inputs.plan_type }}" == "destroy" ]; then
-            terraform plan -destroy
-          else
-            terraform plan
-          fi
+          terraform plan -target=module.lab_vpc
+
+      - name: Terraform Plan EKS
+        run: |
+          cd environments/lab
+          terraform plan -target=module.eks_fargate_karpenter.module.eks
+
+      - name: Terraform Plan Karpenter
+        run: |
+          cd environments/lab
+          terraform plan -target=module.karpenter
+
+      - name: Terraform Plan RDS
+        run: |
+          cd environments/lab
+          terraform plan -target=module.lab_rds

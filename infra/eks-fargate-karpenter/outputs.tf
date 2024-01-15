@@ -27,3 +27,7 @@ output "cluster_version" {
   description = "The eks_fargate_karpenter cluster Kubernetes version."
   value       = module.eks.cluster_version
 }
+
+output "cluster_security_group_id" {
+  value = module.eks.cluster_security_group_id
+}

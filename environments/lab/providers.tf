@@ -13,8 +13,8 @@ terraform {
       version = "~> 3.0"
     }
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
+      source                = "gavinbunney/kubectl"
+      version               = "~> 1.14.0"
       configuration_aliases = [kubectl.gavinbunney]
     }
   }
@@ -24,12 +24,12 @@ terraform {
 
 provider "aws" {
   region = "us-west-2"
-  alias = "oregon"
+  alias  = "oregon"
 }
 
 provider "aws" {
   region = "us-east-1"
-  alias = "virginia"
+  alias  = "virginia"
 }
 
 provider "kubernetes" {
@@ -59,7 +59,7 @@ provider "helm" {
 }
 
 provider "kubectl" {
-  alias = "gavinbunney"
+  alias                  = "gavinbunney"
   apply_retry_count      = 5
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks_fargate_karpenter.cluster_certificate_authority_data)

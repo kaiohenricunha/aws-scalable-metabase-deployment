@@ -18,6 +18,11 @@ output "intra_subnets" {
   value       = module.lab_vpc.intra_subnets
 }
 
+output "default_security_group_id" {
+  description = "The ID of the default security group"
+  value       = module.lab_vpc.default_security_group_id
+}
+
 output "cluster_certificate_authority_data" {
   description = "The eks_fargate_karpenter cluster certificate authority data."
   value       = module.eks_fargate_karpenter.cluster_certificate_authority_data
