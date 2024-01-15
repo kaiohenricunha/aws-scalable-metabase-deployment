@@ -54,21 +54,21 @@ jobs:
             helm uninstall kube-prometheus-stack --namespace monitoring
           fi
 
-      # - name: Set up Istioctl
-      #   uses: zufardhiyaulhaq/setup-istioctl@v1.0.0
-      #   with:
-      #     version: 'v1.1.0'
+      - name: Set up Istioctl
+        uses: zufardhiyaulhaq/setup-istioctl@v1.0.0
+        with:
+          version: 'v1.1.0'
 
-      # - name: Install Istio
-      #   run:  |
-      #     istioctl manifest install
+      - name: Install Istio
+        run:  |
+          istioctl manifest install
 
-      # - name: kubectl apply Istio resources
-      #   run: |
-      #     kubectl apply -f helm/istio/gateway.yaml
-      #     kubectl apply -f helm/istio/virtualservice.yaml
-      #     kubectl apply -f helm/istio/servicemonitor.yaml
-      #     kubectl apply -f helm/istio/podmonitor.yaml
+      - name: kubectl apply Istio resources
+        run: |
+          kubectl apply -f helm/istio/gateway.yaml
+          kubectl apply -f helm/istio/virtualservice.yaml
+          kubectl apply -f helm/istio/servicemonitor.yaml
+          kubectl apply -f helm/istio/podmonitor.yaml
 
       # - name: Helm Operation for Metabase
       #   run: |
