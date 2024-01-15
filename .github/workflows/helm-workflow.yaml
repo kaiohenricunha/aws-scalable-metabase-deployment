@@ -63,6 +63,7 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
+          kubectl apply -f scaledobject.yaml
 
       - name: Helm Operation for Metabase
         if: contains(github.event.inputs.components, 'metabase')
