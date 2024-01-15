@@ -8,7 +8,7 @@ metadata:
 spec:
   advanced:
     horizontalPodAutoscalerConfig:
-    name: istiod
+      name: istiod
   scaleTargetRef:
     kind: Deployment
     name: istiod
