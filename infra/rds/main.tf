@@ -34,7 +34,7 @@ module "db" {
 
   family                 = "mysql5.7"
   major_engine_version   = "5.7"
-  deletion_protection    = true
+  deletion_protection    = false
 
   parameters = [
     {
