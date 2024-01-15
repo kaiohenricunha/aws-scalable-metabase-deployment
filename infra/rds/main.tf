@@ -13,8 +13,8 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
-  vpc_security_group_ids = var.vpc_security_group_ids
-  subnet_ids             = var.subnet_ids
+  vpc_security_group_ids = [var.vpc_security_group_ids]
+  subnet_ids             = [var.subnet_ids]
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
