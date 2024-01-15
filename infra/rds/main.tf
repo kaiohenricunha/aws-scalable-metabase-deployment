@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-east-1"
+}
+
 ##############################################################
 # Data sources to get VPC, subnets and security group details
 ##############################################################
