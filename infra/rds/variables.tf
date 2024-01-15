@@ -17,3 +17,13 @@ variable "db_port" {
   description = "The port for the database"
   type        = string
 }
+
+variable "vpc_security_group_ids" {
+  description = "A list of VPC security group IDs"
+  type        = list(string)
+}
+
+variable "subnet_ids" {
+  description = "A list of subnet IDs"
+  type        = list(string)
+}

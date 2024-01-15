@@ -1,26 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
-##############################################################
-# Data sources to get VPC, subnets and security group details
-##############################################################
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnet_ids" "all" {
-  vpc_id = "${data.aws_vpc.default.id}"
-}
-
-data "aws_security_group" "default" {
-  vpc_id = "${data.aws_vpc.default.id}"
-  name   = "default"
-}
-
-#####
-# DB
-#####
 module "db" {
   source = "terraform-aws-modules/rds/aws"
 
@@ -31,13 +8,13 @@ module "db" {
   instance_class    = "db.t3.micro"
   allocated_storage = 5
 
-  db_name     = var.db_name
-  username    = var.db_username
-  password    = var.db_password
-  port        = var.db_port
+  db_name  = var.db_name
+  username = var.db_username
+  password = var.db_password
+  port     = var.db_port
 
-  vpc_security_group_ids = ["${data.aws_security_group.default.id}"]
-  subnet_ids = ["${data.aws_subnet_ids.all.ids}"]
+  vpc_security_group_ids = var.vpc_security_group_ids
+  subnet_ids             = var.subnet_ids
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
