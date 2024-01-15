@@ -25,6 +25,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
+    - name: Configure kubectl
+      run: |
+        aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: 'v3.13.3'
+
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v1
 
