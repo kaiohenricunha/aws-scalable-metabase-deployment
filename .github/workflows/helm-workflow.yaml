@@ -67,8 +67,7 @@ jobs:
       - name: Helm Operation for Metabase
         if: contains(github.event.inputs.components, 'metabase')
         run: |
-          helm repo add pmint93 https://pmint93.github
-          .github.io/helm-charts
+          helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           cd helm/metabase
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
