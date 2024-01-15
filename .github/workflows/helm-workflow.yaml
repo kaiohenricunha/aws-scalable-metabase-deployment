@@ -1,4 +1,4 @@
-name: Helm Infrastructure Management
+name: Helm Stack Management
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -14,10 +14,9 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      helm_action:
-        description: 'Helm action to perform (plan/apply/uninstall)'
+      components:
+        description: 'Comma-separated list of components to apply (e.g., istio,metabase)'
         required: true
-        default: 'plan'
 
 jobs:
   helm:
@@ -39,17 +38,75 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v1
         with:
-          version: 'v3.5.4'
+          version: 'v3.13.3'
 
-      - name: Helm Operation for kube-prometheus-stack
+      - name: Helm install kube-prometheus-stack
+        if: contains(github.event.inputs.components, 'prometheus')
         run: |
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
           cd helm/kube-prometheus-stack
+          helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
+
+      - name: Helm install Istio
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm repo update
+          helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
+          helm upgrade --install istiod istio/istiod -n istio-system --wait
+
+      - name: Helm Operation for Metabase
+        run: |
+          helm repo add pmint93 https://pmint93.github
+          .github.io/helm-charts
+          helm repo update
+          cd helm/metabase
           if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
-            helm template kube-prometheus-stack . --namespace monitoring -f values.yaml
+            helm template metabase pmint93/metabase --namespace metabase -f values.yaml \
+              --set database.host=${{ secrets.RDS_ENDPOINT }},\
+              --set database.port=${{ secrets.DB_PORT }},\
+              --set database.dbname=${{ secrets.DB_NAME }},\
+              --set database.username=${{ secrets.DB_USERNAME }},\
+              --set database.password=${{ secrets.RDS_PASSWORD }}
           elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
-            helm upgrade --install kube-prometheus-stack . --namespace monitoring -f values.yaml --create-namespace
+            helm install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
+              --set database.host=${{ secrets.RDS_ENDPOINT }},\
+              --set database.port=${{ secrets.DB_PORT }},\
+              --set database.dbname=${{ secrets.DB_NAME }},\
+              --set database.username=${{ secrets.DB_USERNAME }},\
+              --set database.password=${{ secrets.RDS_PASSWORD }}
           elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
-            helm uninstall kube-prometheus-stack --namespace monitoring
+            helm uninstall metabase --namespace metabase
+          fi
+
+      - name: Istio injection for Metabase
+        run: |
+          kubectl label namespace metabase istio-injection=enabled
+
+      # Helm Operation for KEDA
+      - name: Helm Operation for KEDA
+        run: |
+          helm repo add kedacore https://kedacore.github.io/charts
+          helm repo update
+          cd helm/keda
+          if [ "${{ github.event.inputs.helm_action }}" == "plan" ]; then
+            helm template keda kedacore/keda --namespace keda -f values.yaml
+          elif [ "${{ github.event.inputs.helm_action }}" == "apply" ]; then
+            helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
+          elif [ "${{ github.event.inputs.helm_action }}" == "uninstall" ]; then
+            # Delete any ScaledObjects and ScaledJobs
+            kubectl delete $(kubectl get scaledobjects.keda.sh,scaledjobs.keda.sh -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}') || true
+            # Uninstall KEDA Helm chart
+            helm uninstall keda -n keda || true
+            # Patch resources if they are orphaned
+            for i in $(kubectl get scaledobjects -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
+            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
+            done
+            for i in $(kubectl get scaledjobs -A \
+              -o jsonpath='{"-n "}{.items[*].metadata.namespace}{" "}{.items[*].kind}{"/"}{.items[*].metadata.name}{"\n"}');
+            do kubectl patch $i -p '{"metadata":{"finalizers":null}}' --type=merge || true
+            done
           fi
