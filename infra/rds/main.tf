@@ -16,7 +16,7 @@ module "db" {
   manage_master_user_password = true
   iam_database_authentication_enabled = true
 
-  vpc_security_group_ids = var.vpc_security_group_ids
+  vpc_security_group_ids = ["sg-078c0540402bff920", "sg-0dac47a0a91f9fa90"]
   subnet_ids             = var.subnet_ids
 
   maintenance_window = "Mon:00:00-Mon:03:00"
