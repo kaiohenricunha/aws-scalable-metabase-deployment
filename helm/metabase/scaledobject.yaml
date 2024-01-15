@@ -13,8 +13,9 @@ spec:
   pollingInterval: 1
   triggers:
   - type: prometheus
+    metricType: AverageValue
     metadata:
-      serverAddress: http://prometheus-operated.monitoring:9090
+      serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090
       metricName: istio_requests_total_keda
       query: |
         sum(istio_requests_total{destination_app="metabase"})
