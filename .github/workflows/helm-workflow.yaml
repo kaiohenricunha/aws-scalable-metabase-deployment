@@ -38,7 +38,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v1
         with:
-          version: 'v3.5.4'
+          version: 'v3.13.3'
 
       - name: Helm install kube-prometheus-stack
         if: contains(github.event.inputs.components, 'prometheus')
