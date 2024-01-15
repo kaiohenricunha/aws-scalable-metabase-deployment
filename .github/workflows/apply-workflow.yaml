@@ -54,14 +54,14 @@ jobs:
       with:
         version: 'v3.5.4'
 
-    # At this point, since the VPC and EKS cluster are already set up,
-    # Terraform will only apply Karpenter and its dependencies.
-    - name: Terraform Apply Karpenter
-      run: |
-        cd environments/lab
-        terraform apply -auto-approve
-
     - name: Terraform Apply RDS
       run: |
         cd environments/lab
         terraform apply -target=module.lab_rds -auto-approve
+
+    # At this point, since the previous components are already set up,
+    # terraform will only apply Karpenter and its dependencies.
+    - name: Terraform Apply Karpenter
+      run: |
+        cd environments/lab
+        terraform apply -auto-approve
