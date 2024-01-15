@@ -12,10 +12,11 @@ on:
     branches:
       - main
 
+# when needed to skip this flow, include [skip ci] in the commit message:
+# git commit -m "Destroy infrastructure changes [skip ci]"
 jobs:
-  manage:
+  apply-infra:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
