@@ -1,10 +1,10 @@
 database:
   type: mysql
-  # host: ${{ RDS_ENDPOINT }}
+  host: ${{ RDS_ENDPOINT }}
   port: "3306"
-  # dbname: ${{ DB_NAME }}
-  # username: ${{ DB_USERNAME }}
-  # password: ${{ RDS_PASSWORD }}
+  dbname: ${{ DB_NAME }}
+  username: ${{ DB_USERNAME }}
+  password: ${{ RDS_PASSWORD }}
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120
