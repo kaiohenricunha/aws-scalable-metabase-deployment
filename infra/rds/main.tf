@@ -1,9 +1,3 @@
-variable "db_name" {}
-variable "db_username" {}
-variable "db_port" {}
-variable "vpc_security_group_ids" {}
-variable "subnet_ids" {}
-
 module "db" {
   source = "terraform-aws-modules/rds/aws"
 
