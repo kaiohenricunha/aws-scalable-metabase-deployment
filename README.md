@@ -1,53 +1,5 @@
 # Scaling Metabase with EKS on Fargate and Karpenter
 
-```bash
-.
-|-- .github
-|   `-- workflows
-|       |-- apply.yaml
-|       `-- plan.yaml
-|-- README.md
-|-- environments
-|   |-- dev
-|   `-- lab
-|       |-- backend.tf
-|       |-- main.tf
-|       |-- s3-dynamodb
-|       |   |-- main.tf
-|       `-- variables.tf
-|-- helm
-|   |-- keda
-|   |   `-- values.yaml
-|   |-- kube-prometheus-stack
-|   |   `-- values.yaml
-|   `-- metabase
-|       `-- values.yaml
-|-- infra
-|   |-- backend
-|   |   |-- main.tf
-|   |   |-- outputs.tf
-|   |   `-- variables.tf
-|   |-- eks-fargate
-|   |   |-- main.tf
-|   |   `-- outputs.tf
-|   |   `-- variables.tf
-|   |-- karpenter
-|   |   `-- main.tf
-|   |   `-- outputs.tf
-|   |   `-- variables.tf
-|   |-- rds
-|   |   `-- main.tf
-|   |   `-- outputs.tf
-|   |   `-- variables.tf
-|   `-- vpc
-|       |-- main.tf
-|       |-- outputs.tf
-|       `-- variables.tf
-|-- providers.tf
-|-- versions.tf
-|-- trimmed.Dockerfile
-```
-
 # Step 1: Project Setup
 
 ## Local Docker Environment Setup
