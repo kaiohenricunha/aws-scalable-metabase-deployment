@@ -11,11 +11,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      plan_type:
-        description: 'Type of Terraform plan (regular/destroy)'
-        required: true
-        default: 'regular'
 
 jobs:
   plan:
@@ -39,14 +34,24 @@ jobs:
           cd environments/lab
           terraform init
 
-      - name: Terraform Plan
+      - name: Terraform Plan VPC
+        run: |
+          cd environments/lab
+          terraform plan -target=module.lab_vpc
+
+      - name: Terraform Plan EKS
+        run: |
+          cd environments/lab
+          terraform plan -target=module.eks_fargate_karpenter.module.eks
+
+      - name: Terraform Plan Karpenter
+        run: |
+          cd environments/lab
+          terraform plan -target=module.karpenter
+
+      - name: Terraform Plan RDS
         env:
           TF_VAR_db_password: ${{ secrets.RDS_PASSWORD }}
         run: |
           cd environments/lab
-          terraform init
-          if [ "${{ github.event.inputs.plan_type }}" == "destroy" ]; then
-            terraform plan -destroy
-          else
-            terraform plan
-          fi
+          terraform plan -target=module.lab_rds
