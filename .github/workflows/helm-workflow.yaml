@@ -54,7 +54,7 @@ jobs:
           helm repo add istio https://istio-release.storage.googleapis.com/charts
           helm repo update
           helm install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
-          helm install istiod istio/istiod -n istio-system --wait
+          helm install istiod istio/istiod -n istio-system ---version 1.20.1 -wait
           cd helm/istio
           kubectl apply -f .
 
