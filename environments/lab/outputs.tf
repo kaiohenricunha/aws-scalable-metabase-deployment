@@ -44,5 +44,5 @@ output "cluster_version" {
 }
 
 output "eks_cluster_security_group_id" {
-  value = module.eks_fargate_karpenter.module.eks.cluster_security_group_id
+  value = module.eks_fargate_karpenter.cluster_security_group_id
 }
