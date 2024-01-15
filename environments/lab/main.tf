@@ -2,15 +2,15 @@
 # VPC
 ################################################################################
 module "lab_vpc" {
-  source  = "../../infra/vpc"
+  source = "../../infra/vpc"
 
-  name    = "lab-vpc"
+  name     = "lab-vpc"
   vpc_cidr = "10.0.0.0/16"
 
   tags = {
     Environment = "lab"
-    GithubRepo = "aws-scalable-metabase-deployment"
-    GithubOrg  = "kaiohenricunha"
+    GithubRepo  = "aws-scalable-metabase-deployment"
+    GithubOrg   = "kaiohenricunha"
   }
 }
 
@@ -29,7 +29,7 @@ module "eks_fargate_karpenter" {
 
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney
-    aws.virginia         = aws.virginia
+    aws.virginia        = aws.virginia
   }
 
   fargate_profiles = {
@@ -49,4 +49,20 @@ module "eks_fargate_karpenter" {
       ]
     }
   }
+}
+
+################################################################################
+# RDS
+################################################################################
+
+module "lab_rds" {
+  source = "../../infra/rds"
+
+  db_name     = "metabase"
+  db_username = "metabase"
+  db_port     = "3306"
+
+  vpc_security_group_ids = [module.lab_vpc.default_security_group_id]
+  subnet_ids             = module.lab_vpc.private_subnets
+  db_password            = var.db_password
 }

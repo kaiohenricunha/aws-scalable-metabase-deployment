@@ -5,14 +5,6 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-east-1'
   EKS_CLUSTER_NAME: 'metabase-lab'
-  DB_NAME: ${{ secrets.DB_NAME }}
-  DB_USERNAME: ${{ secrets.DB_USERNAME }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-  RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-  RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
-  TF_VAR_db_name: ${{ secrets.DB_NAME }}
-  TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-  TF_VAR_db_port: ${{ secrets.DB_PORT }}
 
 on:
   push:
@@ -67,3 +59,10 @@ jobs:
       run: |
         cd environments/lab
         terraform apply -auto-approve
+
+    - name: Terraform Apply RDS
+      env:
+        TF_VAR_db_password: ${{ secrets.RDS_PASSWORD }}
+      run: |
+        cd environments/lab
+        terraform apply -target=module.lab_rds -auto-approve

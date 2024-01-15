@@ -2,7 +2,7 @@ replicaCount: 1
 database:
   type: mysql
   host: ${{ RDS_ENDPOINT }}
-  port: ${{ DB_PORT }}
+  port: "3306"
   dbname: ${{ DB_NAME }}
   username: ${{ DB_USERNAME }}
   password: ${{ RDS_PASSWORD }}
@@ -23,4 +23,4 @@ readinessProbe:
   timeoutSeconds: 3
   periodSeconds: 5
 service:
-  type: LoadBalancer
+  type: ClusterIP

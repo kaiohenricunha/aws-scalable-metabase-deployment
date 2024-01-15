@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
+      source                = "gavinbunney/kubectl"
+      version               = "~> 1.14.0"
       configuration_aliases = [kubectl.gavinbunney]
     }
   }
@@ -71,7 +71,7 @@ module "eks" {
   ]
 
   tags = {
-    Environment = "lab"
+    Environment              = "lab"
     "karpenter.sh/discovery" = var.cluster_name
   }
 }
@@ -79,10 +79,10 @@ module "eks" {
 module "karpenter" {
   source = "terraform-aws-modules/eks/aws//modules/karpenter"
 
-  cluster_name           = module.eks.cluster_name
+  cluster_name = module.eks.cluster_name
 
-  irsa_oidc_provider_arn = module.eks.oidc_provider_arn
-  irsa_namespace_service_accounts = ["karpenter:karpenter"]
+  irsa_oidc_provider_arn                     = module.eks.oidc_provider_arn
+  irsa_namespace_service_accounts            = ["karpenter:karpenter"]
   enable_karpenter_instance_profile_creation = true
 
   iam_role_additional_policies = {
