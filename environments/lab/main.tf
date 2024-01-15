@@ -43,6 +43,11 @@ module "eks_fargate_karpenter" {
         { namespace = "kube-system" }
       ]
     }
+    istio-system = {
+      selectors = [
+        { namespace = "istio-system" }
+      ]
+    }
   }
 }
 
