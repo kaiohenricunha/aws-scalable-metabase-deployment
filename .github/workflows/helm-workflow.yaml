@@ -53,16 +53,16 @@ jobs:
         run: |
           helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
           helm repo update
-          cd helm/metrics-server
-          helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system -f values.yaml --create-namespace
+          helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system --create-namespace
 
       - name: Helm install Istio
         if: contains(github.event.inputs.components, 'istio')
         run: |
           helm repo add istio https://istio-release.storage.googleapis.com/charts
           helm repo update
+          cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
-          helm upgrade --install istiod istio/istiod -n istio-system --wait
+          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
 
       - name: Helm Operation for Metabase
         if: contains(github.event.inputs.components, 'metabase')
