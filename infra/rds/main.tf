@@ -13,6 +13,9 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
+  manage_master_user_password = true
+  iam_database_authentication_enabled = true
+
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_ids             = var.subnet_ids
 
