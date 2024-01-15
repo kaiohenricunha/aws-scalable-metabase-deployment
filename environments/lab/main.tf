@@ -62,7 +62,5 @@ module "lab_rds" {
   db_username = "metabase"
   db_port     = "3306"
 
-  vpc_security_group_ids = [module.eks_fargate_karpenter.cluster_security_group_id]
-  subnet_ids             = module.lab_vpc.private_subnets
   db_password            = var.db_password
 }
