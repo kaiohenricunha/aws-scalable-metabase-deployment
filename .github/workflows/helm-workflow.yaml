@@ -71,15 +71,14 @@ jobs:
           cd helm/metabase
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
             --set database.host=${{ secrets.RDS_ENDPOINT }},\
-            --set database.port=${{ secrets.DB_PORT }},\
             --set database.dbname=${{ secrets.DB_NAME }},\
             --set database.username=${{ secrets.DB_USERNAME }},\
             --set database.password=${{ secrets.RDS_PASSWORD }}
           kubectl apply -f scaledobject.yaml
 
-      - name: Istio injection for Metabase
-        run: |
-          kubectl label namespace metabase istio-injection=enabled
+      # - name: Istio injection for Metabase
+      #   run: |
+      #     kubectl label namespace metabase istio-injection=enabled
 
       # Helm Operation for KEDA
       - name: Helm install KEDA

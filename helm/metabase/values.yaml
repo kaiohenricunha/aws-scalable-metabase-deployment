@@ -5,13 +5,6 @@ database:
   dbname: ${{ DB_NAME }}
   username: ${{ DB_USERNAME }}
   password: ${{ RDS_PASSWORD }}
-resources:
-  requests:
-    cpu: 500m
-    memory: 500Mi
-  limits:
-    cpu: 800m
-    memory: 700Mi
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120
@@ -23,3 +16,7 @@ readinessProbe:
   periodSeconds: 5
 service:
   type: ClusterIP
+resources:
+  requests:
+    cpu: 500m
+    memory: 500Mi
