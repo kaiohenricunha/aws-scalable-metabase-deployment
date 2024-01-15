@@ -64,6 +64,6 @@ module "lab_rds" {
 
   db_password = var.db_password
 
-  vpc_security_group_ids = [module.lab_vpc.default_security_group_id]
+  vpc_security_group_ids = [module.eks_fargate_karpenter.cluster_primary_security_group_id]
   subnet_ids             = module.lab_vpc.private_subnets
 }

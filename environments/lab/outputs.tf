@@ -23,6 +23,11 @@ output "default_security_group_id" {
   value       = module.lab_vpc.default_security_group_id
 }
 
+output "cluster_primary_security_group_id" {
+  description = "The eks_fargate_karpenter cluster primary security group ID."
+  value       = module.eks_fargate_karpenter.cluster_primary_security_group_id
+}
+
 output "cluster_certificate_authority_data" {
   description = "The eks_fargate_karpenter cluster certificate authority data."
   value       = module.eks_fargate_karpenter.cluster_certificate_authority_data

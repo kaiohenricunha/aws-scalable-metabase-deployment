@@ -16,8 +16,9 @@ module "db" {
   manage_master_user_password = true
   iam_database_authentication_enabled = true
 
-  vpc_security_group_ids = ["sg-078c0540402bff920", "sg-0dac47a0a91f9fa90"]
+  vpc_security_group_ids = var.vpc_security_group_ids
   subnet_ids             = var.subnet_ids
+  create_db_subnet_group = true
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
@@ -31,7 +32,6 @@ module "db" {
     Environment = "lab"
   }
 
-  create_db_subnet_group = true
   family                 = "mysql5.7"
   major_engine_version   = "5.7"
   deletion_protection    = true
