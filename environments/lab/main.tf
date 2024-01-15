@@ -43,11 +43,6 @@ module "eks_fargate_karpenter" {
         { namespace = "kube-system" }
       ]
     }
-    metabase = {
-      selectors = [
-        { namespace = "metabase" }
-      ]
-    }
   }
 }
 
