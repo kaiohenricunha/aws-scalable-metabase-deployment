@@ -71,12 +71,12 @@ jobs:
           .github.io/helm-charts
           helm repo update
           cd helm/metabase
-            helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
-              --set database.host=${{ secrets.RDS_ENDPOINT }},\
-              --set database.port=${{ secrets.DB_PORT }},\
-              --set database.dbname=${{ secrets.DB_NAME }},\
-              --set database.username=${{ secrets.DB_USERNAME }},\
-              --set database.password=${{ secrets.RDS_PASSWORD }}
+          helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
+            --set database.host=${{ secrets.RDS_ENDPOINT }},\
+            --set database.port=${{ secrets.DB_PORT }},\
+            --set database.dbname=${{ secrets.DB_NAME }},\
+            --set database.username=${{ secrets.DB_USERNAME }},\
+            --set database.password=${{ secrets.RDS_PASSWORD }}
 
       # - name: Istio injection for Metabase
       #   run: |
@@ -89,5 +89,5 @@ jobs:
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo update
           cd helm/keda
-            helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
-
+          helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
+          kubectl apply -f keda-dashboard.yaml
