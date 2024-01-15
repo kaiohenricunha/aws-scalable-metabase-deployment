@@ -65,6 +65,7 @@ jobs:
           helm upgrade --install istiod istio/istiod -n istio-system --wait
 
       - name: Helm Operation for Metabase
+        if: contains(github.event.inputs.components, 'metabase')
         run: |
           helm repo add pmint93 https://pmint93.github
           .github.io/helm-charts
@@ -83,6 +84,7 @@ jobs:
 
       # Helm Operation for KEDA
       - name: Helm Operation for KEDA
+        if: contains(github.event.inputs.components, 'keda')
         run: |
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo update
