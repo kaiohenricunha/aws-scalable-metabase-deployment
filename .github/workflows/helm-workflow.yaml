@@ -76,6 +76,7 @@ jobs:
             --set database.dbname=${{ secrets.DB_NAME }},\
             --set database.username=${{ secrets.DB_USERNAME }},\
             --set database.password=${{ secrets.RDS_PASSWORD }}
+          kubectl apply -f scaledobject.yaml
 
       # - name: Istio injection for Metabase
       #   run: |
