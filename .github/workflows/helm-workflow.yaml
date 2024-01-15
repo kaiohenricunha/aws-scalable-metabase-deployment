@@ -70,10 +70,10 @@ jobs:
           helm repo update
           cd helm/metabase
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
-            --set database.host=${{ secrets.RDS_ENDPOINT }},\
-            --set database.dbname=${{ secrets.DB_NAME }},\
-            --set database.username=${{ secrets.DB_USERNAME }},\
-            --set database.password=${{ secrets.RDS_PASSWORD }}
+            --set database.host="${{ secrets.RDS_ENDPOINT }}" \
+            --set database.dbname="${{ secrets.DB_NAME }}" \
+            --set database.username="${{ secrets.DB_USERNAME }}" \
+            --set database.password="${{ secrets.RDS_PASSWORD }}"
           kubectl apply -f scaledobject.yaml
 
       # - name: Istio injection for Metabase
