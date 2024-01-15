@@ -51,9 +51,7 @@ jobs:
       - name: Helm install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
         run: |
-          helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-          helm repo update
-          helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system --create-namespace
+          kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability.yaml
 
       - name: Helm install Istio
         if: contains(github.event.inputs.components, 'istio')
