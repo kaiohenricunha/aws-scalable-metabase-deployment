@@ -14,12 +14,10 @@ module "db" {
   instance_class    = "db.t3.micro"
   allocated_storage = 5
 
-  db_name                     = var.db_name
-  username                    = var.db_username
-  port                        = var.db_port
-  manage_master_user_password = true
-
-  password = var.db_password
+  db_name     = var.db_name
+  username    = var.db_username
+  password    = var.db_password
+  port        = var.db_port
 
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_ids             = var.subnet_ids

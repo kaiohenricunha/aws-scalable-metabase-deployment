@@ -1,29 +1,29 @@
 variable "db_name" {
-  description = "The name of the database to create in the RDS instance"
+  description = "The name of the database"
   type        = string
 }
 
 variable "db_username" {
-  description = "The username for the database administrator"
+  description = "The username for the database"
   type        = string
 }
 
 variable "db_password" {
-  description = "The password for the database administrator"
+  description = "The password for the database"
   type        = string
 }
 
 variable "db_port" {
-  description = "The port on which the database accepts connections"
+  description = "The port for the database"
   type        = string
 }
 
 variable "vpc_security_group_ids" {
-  description = "A list of VPC security group IDs to associate with the RDS instance"
+  description = "List of VPC security group IDs"
   type        = list(string)
 }
 
 variable "subnet_ids" {
-  description = "A list of VPC subnet IDs to associate with the RDS instance"
+  description = "List of subnet IDs for the RDS instance"
   type        = list(string)
 }
