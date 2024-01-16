@@ -1,8 +1,78 @@
-# Scaling Metabase with EKS on Fargate and Karpenter
+# Scaling Metabase with EKS on Fargate and Karpenter and Keda
 
-# Step 1: Project Setup
+The goal of this project is to demonstrate the use of Kubernetes on AWS to scale Metabase, an open-source business intelligence tool. The project uses the following tools:
 
-## Local Docker Environment Setup
+- **Terraform:** For infrastructure as code.
+- **EKS:** For managed Kubernetes on AWS.
+- **Fargate:** For serverless compute on Kubernetes.
+- **Karpenter:** For autoscaling Kubernetes clusters.
+- **Metabase:** For business intelligence and analytics.
+- **GitHub Actions:** For CI/CD.
+- **Docker:** For local development and testing.
+- **Istio:** For service mesh.
+- **Prometheus and Grafana:** For monitoring and observability.
+- **Keda:** For scaling Metabase based on requests per second and memory usage.
+
+Here is the project tree overview:
+
+```bash
+.
+|-- .github
+|   `-- workflows
+|       |-- apply-workflow.yaml
+|       |-- destroy-workflow.yaml
+|       |-- helm-workflow.yaml
+|       `-- plan-workflow.yaml
+|-- assets
+|-- README.md
+|-- environments
+|   |-- dev
+|   `-- lab
+|       |-- backend.tf
+|       |-- main.tf
+|       |-- outputs.tf
+|       |-- providers.tf
+|       |-- s3-dynamodb
+|       |   `-- main.tf
+|       `-- variables.tf
+|-- helm
+|   |-- istio
+|   |   |-- gateway.yaml
+|   |   |-- istiod-values.yaml
+|   |   |-- podmonitor.yaml
+|   |   |-- scaledobject.yaml
+|   |   |-- servicemonitor.yaml
+|   |   `-- virtualservice.yaml
+|   |-- keda
+|   |   |-- keda-dashboard.yaml
+|   |   `-- values.yaml
+|   |-- kube-prometheus-stack
+|   |   `-- values.yaml
+|   `-- metabase
+|       |-- scaledobject.yaml
+|       `-- values.yaml
+|-- infra
+|   |-- backend
+|   |   |-- main.tf
+|   |   |-- outputs.tf
+|   |   `-- variables.tf
+|   |-- eks-fargate-karpenter
+|   |   |-- main.tf
+|   |   |-- outputs.tf
+|   |   `-- variables.tf
+|   |-- rds
+|   |   |-- main.tf
+|   |   `-- variables.tf
+|   `-- vpc
+|       |-- main.tf
+|       |-- outputs.tf
+|       `-- variables.tf
+|-- .gitignore
+|-- .dockerignore
+`-- trimmed.Dockerfile
+```
+
+## Step 1: Project Setup
 
 This phase involves setting up a local Docker environment tailored for SRE/DevOps tasks. The environment includes necessary tools and configurations for infrastructure management and development.
 
@@ -26,11 +96,12 @@ This phase involves setting up a local Docker environment tailored for SRE/DevOp
 
 - Proper file permissions are set to ensure that the `sre` user can operate effectively.
 
-## Terraform Backend Module
+A more complete version of this local environment can be found [here](https://github.com/kaiohenricunha/devops-sre-environment).
+
+### Terraform Backend Module
 
 This module sets up an S3 bucket and a DynamoDB table to be used as a Terraform backend.
 
-### Usage
 
 ```hcl
 module "backend" {
@@ -41,24 +112,18 @@ module "backend" {
 }
 ```
 
-### Outputs
+### GitHub Workflows Configuration
 
-- `bucket_name`: The name of the created S3 bucket.
-- `dynamodb_table_name`: The name of the created DynamoDB table.
+The following workflows were created to automate the CI/CD process:
 
-## GitHub Workflows Configuration
+- **plan-workflow.yaml:** Runs `terraform plan` to review the changes that will be applied to the infrastructure. It triggers on pull requests to the `main` branch.
+- **apply-workflow.yaml:** Runs `terraform apply` to apply the changes to the infrastructure in a specific order using the `target` parameter. It triggers on pushes to the `main` branch. To avoid triggering this workflow, like when only documentation changes are made, add `[skip ci]` to the commit message.
+- **destroy-workflow.yaml:** Runs `terraform destroy` to destroy the infrastructure. It can only be triggered manually from the GitHub Actions page.
+- **helm-workflow.yaml:** Runs `helm upgrade --install` or `helm uninstall` on all the addons as well as Metabase. It can only be triggered manually from the GitHub Actions page of the `helm-stack` branch. You can also select which addon or workload to upgrade or uninstall by adding their names as inputs to the workflow:
 
-This step involves the configuration of GitHub workflows to automate the testing and deployment of the AWS infrastructure.
+![helm-workflow](./assets/helm-workflow.png)
 
-### Terraform Plan Workflow
-
-- A GitHub workflow is created to run `terraform plan` on every pull request to the `main` branch, useful for catching errors before merging changes.
-
-### Terraform Apply Workflow
-
-- A GitHub workflow is created to run `terraform apply` on every push to the `main` branch.
-
-## Initial Terraform and AWS Configuration Steps
+### Initial Terraform and AWS Configuration Steps
 
 1. **Create a Terraform user with access keys** in AWS IAM.
 2. **Run `terraform init` in the root folder** to install the required plugins.
