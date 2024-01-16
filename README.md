@@ -17,6 +17,13 @@ Here is the project tree overview:
 
 ```bash
 .
+|-- .github
+|   `-- workflows
+|       |-- apply-workflow.yaml
+|       |-- destroy-workflow.yaml
+|       |-- helm-workflow.yaml
+|       `-- plan-workflow.yaml
+|-- assets
 |-- README.md
 |-- environments
 |   |-- dev
@@ -60,6 +67,8 @@ Here is the project tree overview:
 |       |-- main.tf
 |       |-- outputs.tf
 |       `-- variables.tf
+|-- .gitignore
+|-- .dockerignore
 `-- trimmed.Dockerfile
 ```
 
