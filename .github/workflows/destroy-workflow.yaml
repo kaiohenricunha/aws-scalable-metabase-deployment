@@ -58,6 +58,11 @@ jobs:
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter -auto-approve
 
+    - name: Terraform Destroy RDS Security Group
+      run: |
+        cd environments/lab
+        terraform destroy -target=module.security_group
+
     - name: Terraform Destroy VPC
       run: |
         cd environments/lab
