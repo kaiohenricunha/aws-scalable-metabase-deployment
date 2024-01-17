@@ -27,4 +27,3 @@ output "database_subnet_group" {
   description = "Database subnet group"
   value       = module.vpc.database_subnet_group
 }
-

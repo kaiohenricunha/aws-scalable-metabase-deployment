@@ -32,3 +32,8 @@ variable "db_subnet_group_name" {
   description = "The name of the database subnet group"
   type        = string
 }
+
+variable "subnet_ids" {
+  description = "A list of subnet IDs"
+  type        = list(string)
+}
