@@ -78,7 +78,7 @@ module "lab_rds" {
 
   db_subnet_group_name   = module.lab_vpc.database_subnet_group
   availability_zone      = local.azs
-  subnet_ids             = slice(tolist(module.lab_vpc.intra_subnets), 0, 2)
+  tags                  = local.tags
 }
 
 ################################################################################

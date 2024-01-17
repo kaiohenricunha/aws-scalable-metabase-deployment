@@ -33,7 +33,8 @@ variable "db_subnet_group_name" {
   type        = string
 }
 
-variable "subnet_ids" {
-  description = "A list of subnet IDs"
-  type        = list(string)
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
 }
