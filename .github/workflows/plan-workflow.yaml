@@ -40,6 +40,11 @@ jobs:
           cd environments/lab
           terraform plan -target=module.lab_vpc
 
+      - name: Terraform Plan RDS Security Group
+        run: |
+          cd environments/lab
+          terraform plan -target=module.security_group
+
       - name: Terraform Plan EKS
         run: |
           cd environments/lab

@@ -13,12 +13,15 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
-  manage_master_user_password = true
+  manage_master_user_password         = true
   iam_database_authentication_enabled = true
 
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_ids             = var.subnet_ids
   create_db_subnet_group = true
+
+  availability_zone = var.availability_zone
+  multi_az          = true
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
@@ -32,9 +35,9 @@ module "db" {
     Environment = "lab"
   }
 
-  family                 = "mysql5.7"
-  major_engine_version   = "5.7"
-  deletion_protection    = true
+  family               = "mysql5.7"
+  major_engine_version = "5.7"
+  deletion_protection  = false
 
   parameters = [
     {
