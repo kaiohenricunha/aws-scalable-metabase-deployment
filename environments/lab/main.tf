@@ -88,7 +88,7 @@ module "security_group" {
 
   name        = local.name
   description = "Complete MySQL example security group"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = module.lab_vpc.vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [
@@ -97,7 +97,7 @@ module "security_group" {
       to_port     = 3306
       protocol    = "tcp"
       description = "MySQL access from within VPC"
-      cidr_blocks = module.vpc.vpc_cidr_block
+      cidr_blocks = module.lab_vpc.vpc_cidr_block
     },
   ]
 
