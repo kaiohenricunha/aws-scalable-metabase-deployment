@@ -45,7 +45,6 @@ jobs:
     - name: Terraform Apply RDS Security Group
       run: |
         cd environments/lab
-        terraform plan -target=module.security_group
 
     - name: Terraform Apply EKS
       run: |
