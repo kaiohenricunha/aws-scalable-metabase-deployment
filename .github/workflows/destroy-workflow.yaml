@@ -57,7 +57,7 @@ jobs:
     - name: Terraform Destroy RDS Security Group
       run: |
         cd environments/lab
-        terraform destroy -target=module.security_group
+        terraform destroy -target=module.security_group -auto-approve
 
     - name: Terraform Destroy VPC
       run: |
