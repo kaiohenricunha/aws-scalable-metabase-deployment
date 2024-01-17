@@ -27,3 +27,9 @@ output "database_subnet_group" {
   description = "Database subnet group"
   value       = module.vpc.database_subnet_group
 }
+
+output "database_subnet_group_name" {
+  description = "Database subnet group name"
+  value       = module.vpc.database_subnet_group_name
+  
+}
