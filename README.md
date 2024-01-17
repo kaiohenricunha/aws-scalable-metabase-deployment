@@ -494,11 +494,11 @@ NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP       PORT(S)
 istio-ingressgateway   LoadBalancer   172.20.xx.xx     <your-IP-address> 80:31380/TCP   10d
 ```
 
-Once you have the external IP address (<your-IP-address>), you can access the services by appending the appropriate path to this IP address in your browser. For example:
+Once you have the external IP address `<your-IP-address>`, you can access the services by appending the appropriate path to this IP address in your browser. For example:
 
-Metabase: http://<your-IP-address>:8080/metabase
-Grafana: http://<your-IP-address>:8080/grafana
-Prometheus: http://<your-IP-address>:8080/prometheus
+Metabase: `http://<your-IP-address>:8080/metabase`
+Grafana: `http://<your-IP-address>:8080/grafana`
+Prometheus: `http://<your-IP-address>:8080/prometheus`
 
 ## Summary
 
