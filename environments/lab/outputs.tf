@@ -13,16 +13,6 @@ output "public_subnets" {
   value       = module.lab_vpc.public_subnets
 }
 
-output "intra_subnets" {
-  description = "List of IDs of intra subnets"
-  value       = module.lab_vpc.intra_subnets
-}
-
-output "database_subnets" {
-  description = "List of IDs of database subnets"
-  value       = module.lab_vpc.database_subnets
-}
-
 output "default_security_group_id" {
   description = "The ID of the default security group"
   value       = module.lab_vpc.default_security_group_id
@@ -61,4 +51,9 @@ output "cluster_version" {
 output "database_subnet_group_name" {
   description = "Database subnet group"
   value       = module.lab_vpc.database_subnet_group_name
+}
+
+output "database_subnet_group" {
+  description = "Database subnet group"
+  value       = module.lab_vpc.database_subnet_group
 }
