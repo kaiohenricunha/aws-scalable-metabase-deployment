@@ -75,7 +75,7 @@ module "lab_rds" {
 
   vpc_security_group_ids = [module.security_group.security_group_id]
   subnet_ids             = module.lab_vpc.intra_subnets
-  availability_zone      = local.azs[0]
+  availability_zone      = local.azs
 }
 
 ################################################################################
