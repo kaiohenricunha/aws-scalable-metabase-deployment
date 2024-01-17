@@ -9,7 +9,6 @@ locals {
 
   tags = {
     Name       = local.name
-    Example    = local.name
     Repository = "https://github.com/kaiohenricunha/aws-scalable-metabase-deployment"
   }
 }
