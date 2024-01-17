@@ -332,7 +332,7 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-          kubectl apply -f scaledobject.yaml
+          kubectl apply -f scaledobject.yaml &&
 
       - name: Helm install Metabase
         if: contains(github.event.inputs.components, 'metabase')
@@ -361,6 +361,15 @@ jobs:
           helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
           kubectl apply -f keda-dashboard.yaml
 ```
+
+On this step, some other components were deployed as well:
+
+- Istio Ingrees Gateway: To allow access to the services from outside the cluster.
+- Istio PodMonitor: To monitor the Istio pods.
+- Istio ServiceMonitor: To monitor the Istio services.
+- Istio ScaledObject: To scale the Istio pods based on requests per second and CPU usage.
+- Keda Dashboard: To monitor the Keda ScaledObjects and HPAs. It's useful to observe the scaling of Metabase.
+- Grafana and Prometheus VirtualServices: To allow access to Grafana and Prometheus from outside the cluster, leveraging Istio.
 
 ## Step 5: Metabase Deployment
 
