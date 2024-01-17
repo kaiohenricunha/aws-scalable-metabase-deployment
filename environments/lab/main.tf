@@ -74,7 +74,7 @@ module "lab_rds" {
   db_port     = 3306
   db_password = var.db_password
 
-  vpc_security_group_ids = [module.eks_fargate_karpenter.cluster_primary_security_group_id]
+  vpc_security_group_ids = [module.security_group.security_group_id]
   subnet_ids             = module.lab_vpc.intra_subnets
   availability_zone      = local.azs[0]
 }
