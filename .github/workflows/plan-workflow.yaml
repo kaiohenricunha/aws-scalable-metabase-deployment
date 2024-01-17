@@ -4,7 +4,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-east-1'
-  EKS_CLUSTER_NAME: 'metabase-lab'
+  EKS_CLUSTER_NAME: ${{ env.EKS_CLUSTER_NAME }}
   TF_VAR_db_password: ${{ secrets.RDS_PASSWORD }}
 
 on:
@@ -34,6 +34,16 @@ jobs:
         run: |
           cd environments/lab
           terraform init
+
+      - name: Get Terraform Output
+        id: get_tf_output
+        run: |
+          cd environments/lab
+          echo "EKS_CLUSTER_NAME=$(terraform output -raw cluster_name)" >> $GITHUB_ENV
+
+      - name: Use Cluster Name
+        run: |
+          echo "Using cluster name: ${{ env.EKS_CLUSTER_NAME }}"
 
       - name: Terraform Plan VPC
         run: |
