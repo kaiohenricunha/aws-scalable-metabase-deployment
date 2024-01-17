@@ -75,8 +75,10 @@ module "lab_rds" {
   db_password = var.db_password
 
   vpc_security_group_ids = [module.security_group.security_group_id]
+
   db_subnet_group_name   = module.lab_vpc.database_subnet_group
   availability_zone      = local.azs
+  subnet_ids             = slice(tolist(module.lab_vpc.intra_subnets), 0, 2)
 }
 
 ################################################################################
