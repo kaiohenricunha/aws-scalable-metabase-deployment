@@ -21,6 +21,7 @@ module "lab_vpc" {
 
   name     = local.name
   vpc_cidr = local.vpc_cidr
+  azs = local.azs
 
   tags = local.tags
 }
