@@ -35,6 +35,7 @@ jobs:
       run: |
         cd environments/lab
         terraform init
+        terraform state push errored.tfstate
 
     - name: Terraform Apply VPC
       run: |
