@@ -6,9 +6,9 @@ module "db" {
   create_db_option_group    = false
   create_db_parameter_group = false
 
-  engine            = "mysql"
-  engine_version    = "5.7"
-  instance_class    = "db.t3.micro"
+  engine         = "mysql"
+  engine_version = "5.7"
+  instance_class = "db.t3.micro"
 
   allocated_storage = 20
 
@@ -17,7 +17,7 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
-  db_subnet_group_name = var.db_subnet_group_name
+  db_subnet_group_name   = var.db_subnet_group_name
   vpc_security_group_ids = var.vpc_security_group_ids
 
   maintenance_window = "Mon:00:00-Mon:03:00"
