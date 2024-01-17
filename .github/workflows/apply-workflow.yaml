@@ -51,6 +51,11 @@ jobs:
         cd environments/lab
         terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
 
+    - name: Terraform Apply RDS
+      run: |
+        cd environments/lab
+        terraform apply -target=module.lab_rds -auto-approve
+
     - name: Configure kubectl
       run: |
         aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
@@ -59,11 +64,6 @@ jobs:
       uses: azure/setup-helm@v1
       with:
         version: 'v3.13.3'
-
-    - name: Terraform Apply RDS
-      run: |
-        cd environments/lab
-        terraform apply -target=module.lab_rds -auto-approve
 
     # At this point, since the previous components are already set up,
     # terraform will only apply Karpenter and its dependencies.
