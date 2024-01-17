@@ -52,3 +52,8 @@ output "cluster_version" {
   description = "The eks_fargate_karpenter cluster Kubernetes version."
   value       = module.eks_fargate_karpenter.cluster_version
 }
+
+output "vpc_cidr" {
+  description = "The CIDR block of the VPC."
+  value       = module.lab_vpc.vpc_cidr
+}
