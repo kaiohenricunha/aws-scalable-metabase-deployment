@@ -56,18 +56,15 @@ Here is the project tree overview:
 |-- infra
 |   |-- backend
 |   |   |-- main.tf
-|   |   |-- outputs.tf
 |   |   `-- variables.tf
 |   |-- eks-fargate-karpenter
 |   |   |-- main.tf
-|   |   |-- outputs.tf
 |   |   `-- variables.tf
 |   |-- rds
 |   |   |-- main.tf
 |   |   `-- variables.tf
 |   `-- vpc
 |       |-- main.tf
-|       |-- outputs.tf
 |       `-- variables.tf
 |-- .gitignore
 |-- .dockerignore
