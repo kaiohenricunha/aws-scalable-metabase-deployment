@@ -17,8 +17,12 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
+  multi_az               = true
   db_subnet_group_name   = var.db_subnet_group_name
   vpc_security_group_ids = var.vpc_security_group_ids
+
+  skip_final_snapshot = true
+  deletion_protection = false
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
@@ -27,5 +31,34 @@ module "db" {
 
   apply_immediately = true
 
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  create_monitoring_role                = true
+  monitoring_interval                   = 60
+
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8mb4"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8mb4"
+    }
+  ]
+
   tags = var.tags
+
+  db_instance_tags = {
+    "Sensitive" = "high"
+  }
+  db_option_group_tags = {
+    "Sensitive" = "low"
+  }
+  db_parameter_group_tags = {
+    "Sensitive" = "low"
+  }
+  db_subnet_group_tags = {
+    "Sensitive" = "high"
+  }
 }

@@ -23,7 +23,7 @@ output "default_security_group_id" {
   value       = module.vpc.default_security_group_id
 }
 
-output "database_subnet_group_name" {
-  description = "Database subnet group name"
-  value       = module.vpc.database_subnet_group_name
+output "database_subnet_group" {
+  description = "Database subnet group"
+  value       = module.vpc.database_subnet_group
 }

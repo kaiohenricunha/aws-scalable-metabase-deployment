@@ -53,7 +53,7 @@ output "cluster_version" {
   value       = module.eks_fargate_karpenter.cluster_version
 }
 
-output "database_subnet_group_name" {
+output "database_subnet_group" {
   description = "Database subnet group"
-  value       = module.lab_vpc.database_subnet_group_name
+  value       = module.lab_vpc.database_subnet_group
 }
