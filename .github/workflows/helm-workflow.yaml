@@ -1,4 +1,4 @@
-name: Helm Stack Management
+name: Cluster Stack Management
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -47,8 +47,9 @@ jobs:
           helm repo update
           cd helm/kube-prometheus-stack
           helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
+          kubectl apply -f grafana-vs.yaml -n monitoring && kubectl apply -f prometheus-vs.yaml -n monitoring
 
-      - name: Helm install metrics-server
+      - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
@@ -76,9 +77,9 @@ jobs:
             --set database.password="${{ secrets.RDS_PASSWORD }}"
           kubectl apply -f scaledobject.yaml
 
-      # - name: Istio injection for Metabase
-      #   run: |
-      #     kubectl label namespace metabase istio-injection=enabled
+      - name: Istio injection for Metabase
+        run: |
+          kubectl label namespace metabase istio-injection=enabled
 
       # Helm Operation for KEDA
       - name: Helm install KEDA
