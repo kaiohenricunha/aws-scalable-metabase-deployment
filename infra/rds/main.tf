@@ -20,6 +20,9 @@ module "db" {
   subnet_ids             = var.subnet_ids
   create_db_subnet_group = true
 
+  availability_zone = var.availability_zone
+  multi_az = true
+
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
 
@@ -34,7 +37,7 @@ module "db" {
 
   family                 = "mysql5.7"
   major_engine_version   = "5.7"
-  deletion_protection    = true
+  deletion_protection    = false
 
   parameters = [
     {

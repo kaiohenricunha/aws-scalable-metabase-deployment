@@ -27,3 +27,8 @@ variable "subnet_ids" {
   description = "A list of subnet IDs"
   type        = list(string)
 }
+
+variable "availability_zone" {
+  description = "The availability zone for the database"
+  type        = string
+}

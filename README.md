@@ -1,4 +1,4 @@
-# Scaling Metabase with EKS on Fargate and Karpenter and Keda
+# Scaling Metabase with EKS on Fargate, Karpenter and Keda
 
 The goal of this project is to demonstrate the use of Kubernetes on AWS to scale Metabase, an open-source business intelligence tool. The project uses the following tools:
 
