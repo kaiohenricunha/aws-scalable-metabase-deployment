@@ -19,6 +19,7 @@ spec:
     metricType: AverageValue
     metadata:
       serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090
+      kube-prometheus-stack-prometheus
       metricName: istio_requests_total_keda
       query: |
         sum(istio_requests_total{destination_app="metabase"})
