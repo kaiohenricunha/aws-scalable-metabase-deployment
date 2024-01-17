@@ -97,7 +97,7 @@ module "security_group" {
       to_port     = 3306
       protocol    = "tcp"
       description = "MySQL access from within VPC"
-      cidr_blocks = module.lab_vpc.module.vpc.vpc_cidr_block
+      cidr_blocks = module.lab_vpc.vpc.vpc_cidr_block
     },
   ]
 
