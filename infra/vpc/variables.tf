@@ -18,3 +18,23 @@ variable "azs" {
   description = "A list of availability zones"
   type        = list(string)
 }
+
+variable "private_subnets" {
+  description = "A list of private subnets"
+  type        = list(string)
+}
+
+variable "public_subnets" {
+  description = "A list of public subnets"
+  type        = list(string)
+}
+
+variable "intra_subnets" {
+  description = "A list of intra subnets"
+  type        = list(string)
+}
+
+variable "database_subnets" {
+  description = "A list of database subnets"
+  type        = list(string)
+}
