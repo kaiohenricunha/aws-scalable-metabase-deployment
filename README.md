@@ -171,7 +171,7 @@ If a namespace has a Fargate profile, pods will be scheduled on Fargate. If not,
 module "eks_fargate_karpenter" {
   source = "../../infra/eks-fargate-karpenter"
 
-  cluster_name             = "metabase-lab"
+  cluster_name             = "metabaselab"
   cluster_version          = "1.28"
   vpc_id                   = module.lab_vpc.vpc_id
   subnet_ids               = module.lab_vpc.private_subnets
@@ -274,7 +274,7 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: 'us-east-1'
-  EKS_CLUSTER_NAME: 'metabase-lab'
+  EKS_CLUSTER_NAME: 'metabaselab'
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
   DB_NAME: "metabase"

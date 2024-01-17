@@ -17,11 +17,9 @@ module "db" {
   iam_database_authentication_enabled = true
 
   vpc_security_group_ids = var.vpc_security_group_ids
-  subnet_ids             = var.subnet_ids
-  create_db_subnet_group = true
 
-  availability_zone = var.availability_zone
-  multi_az          = true
+  multi_az             = true
+  db_subnet_group_name = var.db_subnet_group_name
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"

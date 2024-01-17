@@ -21,6 +21,7 @@ module "lab_vpc" {
 
   name     = local.name
   vpc_cidr = local.vpc_cidr
+  azs      = local.azs
 
   tags = local.tags
 }
@@ -74,8 +75,8 @@ module "lab_rds" {
   db_password = var.db_password
 
   vpc_security_group_ids = [module.security_group.security_group_id]
-  subnet_ids             = module.lab_vpc.intra_subnets
-  availability_zone      = local.azs[0]
+  db_subnet_group_name   = module.lab_vpc.database_subnet_group
+  availability_zone      = local.azs
 }
 
 ################################################################################
@@ -85,8 +86,8 @@ module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.0"
 
-  name        = local.name
-  vpc_id      = module.lab_vpc.vpc_id
+  name   = local.name
+  vpc_id = module.lab_vpc.vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [

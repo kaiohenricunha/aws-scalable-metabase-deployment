@@ -5,10 +5,12 @@ module "vpc" {
   name = var.name
   cidr = var.vpc_cidr
 
-  azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  private_subnets = ["10.0.64.0/19", "10.0.96.0/19", "10.0.128.0/19"] # Adjusted to avoid overlap
+  azs             = var.azs
+  private_subnets = ["10.0.64.0/19", "10.0.96.0/19", "10.0.128.0/19"]
   public_subnets  = ["10.0.160.0/19", "10.0.192.0/19", "10.0.224.0/19"]
-  intra_subnets   = ["10.0.0.0/19", "10.0.32.0/19"] # Placed after public and intra subnets to avoid conflicts
+  intra_subnets   = ["10.0.0.0/19", "10.0.32.0/19"]
+
+  create_database_subnet_group = true
 
   enable_nat_gateway = true
   single_nat_gateway = true
@@ -20,7 +22,7 @@ module "vpc" {
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = "1"
     # Tags subnets for Karpenter auto-discovery
-    "karpenter.sh/discovery" = "metabase-lab"
+    "karpenter.sh/discovery" = "metabaselab"
   }
 
   tags = var.tags
