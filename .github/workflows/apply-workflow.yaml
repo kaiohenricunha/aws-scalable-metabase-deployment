@@ -41,6 +41,11 @@ jobs:
         cd environments/lab
         terraform apply -target=module.lab_vpc -auto-approve
 
+    - name: Terraform Plan RDS Security Group
+      run: |
+        cd environments/lab
+        terraform plan -target=module.security_group
+
     - name: Terraform Apply EKS
       run: |
         cd environments/lab

@@ -86,7 +86,6 @@ module "security_group" {
   version = "~> 5.0"
 
   name        = local.name
-  description = "Complete MySQL example security group"
   vpc_id      = module.lab_vpc.vpc_id
 
   # ingress
