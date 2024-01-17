@@ -13,6 +13,11 @@ output "public_subnets" {
   value       = module.lab_vpc.public_subnets
 }
 
+output "database_subnets" {
+  description = "Ids of database subnets"
+  value       = module.lab_vpc.database_subnets
+}
+
 output "default_security_group_id" {
   description = "The ID of the default security group"
   value       = module.lab_vpc.default_security_group_id
@@ -46,14 +51,4 @@ output "cluster_name" {
 output "cluster_version" {
   description = "The eks_fargate_karpenter cluster Kubernetes version."
   value       = module.eks_fargate_karpenter.cluster_version
-}
-
-output "database_subnet_group_name" {
-  description = "Database subnet group"
-  value       = module.lab_vpc.database_subnet_group_name
-}
-
-output "database_subnet_group" {
-  description = "Database subnet group"
-  value       = module.lab_vpc.database_subnet_group
 }

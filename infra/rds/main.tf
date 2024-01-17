@@ -17,10 +17,12 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
+  iam_database_authentication_enabled = true
+
   multi_az               = true
-  db_subnet_group_name   = var.db_subnet_group_name
   vpc_security_group_ids = var.vpc_security_group_ids
   subnet_ids             = var.subnet_ids
+  create_db_subnet_group = true
 
   skip_final_snapshot = true
   deletion_protection = false
