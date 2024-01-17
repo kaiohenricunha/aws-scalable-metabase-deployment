@@ -74,7 +74,7 @@ module "lab_rds" {
   db_port     = 3306
   db_password = var.db_password
 
-  vpc_security_group_ids = [module.lab_vpc.vpc_id]
+  vpc_security_group_ids = [module.lab_vpc.vpc_id, module.security_group.security_group_id]
 
   db_subnet_group_name = module.lab_vpc.database_subnet_group
   availability_zone    = local.azs
