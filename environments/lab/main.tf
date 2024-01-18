@@ -38,9 +38,9 @@ module "eks_fargate_karpenter" {
 
   cluster_name             = local.name
   cluster_version          = "1.28"
-  vpc_id                   = module.vpc.this_vpc_id
-  subnet_ids               = module.vpc.private_subnets
-  control_plane_subnet_ids = module.vpc.intra_subnets
+  vpc_id                   = module.lab_vpc.vpc_id
+  subnet_ids               = module.lab_vpc.private_subnets
+  control_plane_subnet_ids = module.lab_vpc.intra_subnets
 
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney
@@ -73,10 +73,10 @@ module "eks_fargate_karpenter" {
 module "lab_rds" {
   source = "../../infra/rds"
 
-  db_name                = local.name
-  db_username            = local.name
-  db_port                = 3306
-  db_password            = var.db_password
+  db_name     = local.name
+  db_username = local.name
+  db_port     = 3306
+  db_password = var.db_password
 
   vpc_security_group_ids = [module.security_group.security_group_id]
   subnet_ids             = module.lab_vpc.database_subnets
@@ -92,7 +92,7 @@ module "security_group" {
   version = "~> 5.0"
 
   name   = local.name
-  vpc_id = module.vpc.this_vpc_id
+  vpc_id = module.lab_vpc.vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [
