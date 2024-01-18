@@ -38,9 +38,9 @@ module "eks_fargate_karpenter" {
 
   cluster_name             = local.name
   cluster_version          = "1.28"
-  vpc_id                   = module.lab_vpc.this_vpc_id
-  subnet_ids               = module.lab_vpc.private_subnets
-  control_plane_subnet_ids = module.lab_vpc.intra_subnets
+  vpc_id                   = module.vpc.this_vpc_id
+  subnet_ids               = module.vpc.private_subnets
+  control_plane_subnet_ids = module.vpc.intra_subnets
 
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney
@@ -80,7 +80,7 @@ module "lab_rds" {
 
   vpc_security_group_ids = [module.security_group.security_group_id]
   availability_zone      = local.azs
-  subnet_ids             = module.lab_vpc.database_subnets
+  subnet_ids             = module.vpc.database_subnets
 
   tags = local.tags
 }
@@ -93,7 +93,7 @@ module "security_group" {
   version = "~> 5.0"
 
   name   = local.name
-  vpc_id = module.lab_vpc.vpc_id
+  vpc_id = module.vpc.this_vpc_id
 
   # ingress
   ingress_with_cidr_blocks = [
