@@ -48,7 +48,6 @@ jobs:
           helm repo update
           cd helm/keda
           helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
-          kubectl apply -f metabase-scaledobject.yaml && kubectl apply -f istio-scaledobject.yaml
 
       - name: Helm install Istio
         if: contains(github.event.inputs.components, 'istio')
@@ -58,7 +57,7 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-          kubectl apply -f gateway.yaml -n && kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml && kubectl apply -f metabase-vs.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
+          kubectl apply -f istio-scaledobject.yaml && kubectl apply -f gateway.yaml -n && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
 
       - name: Helm install kube-prometheus-stack
         if: contains(github.event.inputs.components, 'prometheus')
@@ -67,7 +66,7 @@ jobs:
           helm repo update
           cd helm/kube-prometheus-stack
           helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
-          kubectl apply -f keda-dashboard.yaml
+          kubectl apply -f keda-dashboard.yaml && kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
@@ -89,3 +88,5 @@ jobs:
       - name: Istio injection for Metabase
         run: |
           kubectl label namespace metabase istio-injection=enabled
+          cd helm/metabase
+          kubectl apply -f metabase-vs.yaml
