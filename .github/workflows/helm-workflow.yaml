@@ -40,6 +40,16 @@ jobs:
         with:
           version: 'v3.13.3'
 
+      - name: Helm install Istio
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm repo update
+          cd helm/istio
+          helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
+          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
+          kubectl apply -f scaledobject.yaml
+
       - name: Helm install kube-prometheus-stack
         if: contains(github.event.inputs.components, 'prometheus')
         run: |
