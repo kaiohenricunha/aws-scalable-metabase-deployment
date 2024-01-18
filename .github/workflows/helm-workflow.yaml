@@ -56,7 +56,14 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-          kubectl apply -f istio-scaledobject.yaml && kubectl apply -f gateway.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
+          kubectl apply -f istio-scaledobject.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
+
+      - name: Helm install Istio Ingress
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm upgrade --install istio-ingressgateway istio/gateway -n istio-ingress --create-namespace
+          cd helm/istio
+          kubectl apply -f gateway.yaml
 
       - name: Helm install kube-prometheus-stack
         if: contains(github.event.inputs.components, 'prometheus')
@@ -65,7 +72,18 @@ jobs:
           helm repo update
           cd helm/kube-prometheus-stack
           helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
-          kubectl apply -f keda-dashboard.yaml && kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml
+          kubectl apply -f keda-dashboard.yaml
+
+      - name: Istio injection on kube-prometheus-stack workloads
+        if: contains(github.event.inputs.components, 'prometheus')
+        run: |
+          kubectl label namespace monitoring istio-injection=enabled
+          cd helm/kube-prometheus-stack
+          kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml
+          kubectl annotate deployment kube-prometheus-stack-grafana sidecar.istio.io/inject="true" -n monitoring
+          kubectl annotate deployment kube-prometheus-stack-kube-state-metrics sidecar.istio.io/inject="true" -n monitoring
+          kubectl annotate deployment kube-prometheus-stack-operator sidecar.istio.io/inject="true" -n monitoring
+          kubectl annotate statefulset prometheus-kube-prometheus-stack-prometheus sidecar.istio.io/inject="true" -n monitoring
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
@@ -83,8 +101,10 @@ jobs:
             --set database.dbname="${{ secrets.DB_NAME }}" \
             --set database.username="${{ secrets.DB_USERNAME }}" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
+          kubectl apply -f metabase-scaledobject.yaml
 
       - name: Istio injection for Metabase
+        if: contains(github.event.inputs.components, 'metabase')
         run: |
           kubectl label namespace metabase istio-injection=enabled
           cd helm/metabase
