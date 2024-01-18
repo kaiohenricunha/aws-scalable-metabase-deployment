@@ -61,8 +61,7 @@ jobs:
       - name: Helm install Istio Ingress
         if: contains(github.event.inputs.components, 'istio')
         run: |
-          kubectl create namespace istio-ingress
-          helm upgrade --install istio-ingressgateway istio/gateway -n istio-ingress
+          helm upgrade --install istio-ingressgateway istio/gateway -n istio-ingress --create-namespace
           cd helm/istio
           kubectl apply -f gateway.yaml
 
