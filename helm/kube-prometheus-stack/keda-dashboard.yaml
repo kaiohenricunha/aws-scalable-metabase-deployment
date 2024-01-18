@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keda-dashboard
+  namespace: monitoring
   labels:
     grafana_dashboard: "1"
   annotations:

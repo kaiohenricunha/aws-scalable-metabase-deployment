@@ -7,8 +7,8 @@ env:
   EKS_CLUSTER_NAME: 'metabaselab'
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-  DB_NAME: "metabase"
-  DB_USERNAME: "metabase"
+  DB_NAME: "metabaselab"
+  DB_USERNAME: "metabaselab"
   DB_PORT: "3306"
 
 on:
@@ -47,7 +47,7 @@ jobs:
           helm repo update
           cd helm/kube-prometheus-stack
           helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
-          kubectl apply -f grafana-vs.yaml -n monitoring && kubectl apply -f prometheus-vs.yaml -n monitoring
+          kubectl apply -f keda-dashboard.yaml
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
@@ -62,7 +62,7 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-          kubectl apply -f scaledobject.yaml
+          kubectl apply -f gateway.yaml -n && kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml && kubectl apply -f metabase-vs.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
 
       - name: Helm install Metabase
         if: contains(github.event.inputs.components, 'metabase')
@@ -75,7 +75,6 @@ jobs:
             --set database.dbname="${{ secrets.DB_NAME }}" \
             --set database.username="${{ secrets.DB_USERNAME }}" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
-          kubectl apply -f scaledobject.yaml
 
       - name: Istio injection for Metabase
         run: |
@@ -89,4 +88,4 @@ jobs:
           helm repo update
           cd helm/keda
           helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
-          kubectl apply -f keda-dashboard.yaml
+          kubectl apply -f metabase-scaledobject.yaml && kubectl apply -f isito-scaledobject
