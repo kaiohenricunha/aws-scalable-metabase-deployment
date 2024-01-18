@@ -23,11 +23,6 @@ variable "vpc_security_group_ids" {
   type        = list(string)
 }
 
-variable "availability_zone" {
-  description = "The availability zone for the database"
-  type        = string
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
