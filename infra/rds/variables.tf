@@ -28,11 +28,6 @@ variable "availability_zone" {
   type        = string
 }
 
-variable "db_subnet_group_name" {
-  description = "The name of the database subnet group"
-  type        = string
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
