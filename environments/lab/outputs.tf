@@ -1,26 +1,21 @@
-output "vpc_id" {
-  description = "The ID of the VPC"
-  value       = module.lab_vpc.vpc_id
+output "this_vpc_id" {
+  value = module.vpc.vpc_id
 }
 
-output "private_subnet_ids" {
-  description = "List of IDs of private subnets"
-  value       = module.lab_vpc.private_subnets
+output "private_subnets" {
+  value = module.vpc.private_subnets
 }
 
-output "public_subnet_ids" {
-  description = "List of IDs of public subnets"
-  value       = module.lab_vpc.public_subnets
+output "public_subnets" {
+  value = module.vpc.public_subnets
 }
 
-output "database_subnet_ids" {
-  description = "List of IDs of database subnets"
-  value       = module.lab_vpc.database_subnets
+output "database_subnets" {
+  value = module.vpc.database_subnets
 }
 
-output "intra_subnet_ids" {
-  description = "List of IDs of intra subnets"
-  value       = module.lab_vpc.intra_subnets
+output "intra_subnets" {
+  value = module.vpc.intra_subnets
 }
 
 output "security_group_id" {
