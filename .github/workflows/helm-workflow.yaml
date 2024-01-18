@@ -76,6 +76,7 @@ jobs:
           kubectl apply -f keda-dashboard.yaml
 
       - name: Istio injection on kube-prometheus-stack workloads
+        if: contains(github.event.inputs.components, 'prometheus')
         run: |
           kubectl label namespace monitoring istio-injection=enabled
           cd helm/kube-prometheus-stack
