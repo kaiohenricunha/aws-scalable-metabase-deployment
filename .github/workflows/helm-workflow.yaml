@@ -7,8 +7,8 @@ env:
   EKS_CLUSTER_NAME: 'metabaselab'
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
-  DB_NAME: "metabase"
-  DB_USERNAME: "metabase"
+  DB_NAME: "metabaselab"
+  DB_USERNAME: "metabaselab"
   DB_PORT: "3306"
 
 on:
@@ -75,7 +75,7 @@ jobs:
             --set database.dbname="${{ secrets.DB_NAME }}" \
             --set database.username="${{ secrets.DB_USERNAME }}" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
-          kubectl apply -f scaledobject.yaml
+          kubectl apply -f scaledobject.yaml && kubectl apply -f metabase-vs.yaml
 
       - name: Istio injection for Metabase
         run: |
