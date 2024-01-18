@@ -75,6 +75,12 @@ jobs:
           helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
           kubectl apply -f keda-dashboard.yaml && kubectl apply -f grafana-vs.yaml && kubectl apply -f prometheus-vs.yaml
 
+      - name: Istio injection for Grafana and Prometheus
+        run: |
+          kubectl label namespace monitoring istio-injection=enabled
+          cd helm/kube-prometheus-stack
+          kubectl apply -f metabase-vs.yaml
+
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
         run: |
