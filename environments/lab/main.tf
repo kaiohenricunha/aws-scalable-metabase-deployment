@@ -38,9 +38,9 @@ module "eks_fargate_karpenter" {
 
   cluster_name             = local.name
   cluster_version          = "1.28"
-  vpc_id                   = module.lab_vpc.module.vpc.vpc_id
-  subnet_ids               = module.lab_vpc.private_subnets
-  control_plane_subnet_ids = module.lab_vpc.intra_subnets
+  vpc_id                   = module.lab_vpc.vpc_id
+  subnet_ids               = module.lab_vpc.private_subnets_ids
+  control_plane_subnet_ids = module.lab_vpc.intra_subnets_ids
 
   providers = {
     kubectl.gavinbunney = kubectl.gavinbunney

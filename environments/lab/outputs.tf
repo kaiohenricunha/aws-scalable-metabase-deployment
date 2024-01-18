@@ -30,5 +30,5 @@ output "security_group_id" {
 
 output "eks_cluster_name" {
   description = "The name of the EKS cluster"
-  value       = local.name
+  value       = module.eks_fargate_karpenter.cluster_name
 }
