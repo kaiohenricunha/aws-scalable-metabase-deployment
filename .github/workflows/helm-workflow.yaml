@@ -40,7 +40,6 @@ jobs:
         with:
           version: 'v3.13.3'
 
-      # Helm Operation for KEDA
       - name: Helm install KEDA
         if: contains(github.event.inputs.components, 'keda')
         run: |
