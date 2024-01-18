@@ -40,7 +40,6 @@ jobs:
         with:
           version: 'v3.13.3'
 
-      # Helm Operation for KEDA
       - name: Helm install KEDA
         if: contains(github.event.inputs.components, 'keda')
         run: |
@@ -57,7 +56,7 @@ jobs:
           cd helm/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-          kubectl apply -f istio-scaledobject.yaml && kubectl apply -f gateway.yaml -n && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
+          kubectl apply -f istio-scaledobject.yaml && kubectl apply -f gateway.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
 
       - name: Helm install kube-prometheus-stack
         if: contains(github.event.inputs.components, 'prometheus')
