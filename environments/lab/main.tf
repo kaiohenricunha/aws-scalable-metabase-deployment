@@ -95,13 +95,14 @@ module "security_group" {
   vpc_id = module.lab_vpc.vpc_id
 
   # ingress
-  ingress_with_cidr_blocks = [
+  ingress_with_source_security_group_id = [
     {
-      from_port   = 3306
-      to_port     = 3306
-      protocol    = "tcp"
-      description = "MySQL access from within VPC"
-      cidr_blocks = local.vpc_cidr
+      rule                     = "database-tcp"
+      source_security_group_id = module.eks_fargate_karpenter.cluster_primary_security_group_id
+      from_port                = 3306
+      to_port                  = 3306
+      protocol                 = "tcp"
+      description              = "MySQL access from within VPC"
     },
   ]
 

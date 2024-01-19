@@ -1,10 +1,11 @@
 database:
   type: mysql
-  host: ${{ RDS_ENDPOINT }}
+# host: ${{ RDS_ENDPOINT }}
   port: "3306"
-  dbname: ${{ DB_NAME }}
-  username: ${{ DB_USERNAME }}
-  password: ${{ RDS_PASSWORD }}
+# dbname: ${{ DB_NAME }}
+# username: ${{ DB_USERNAME }}
+# password: ${{ RDS_PASSWORD }}
+  connectionURI: mysql://metabaselab.cromq6i28z3m.us-east-1.rds.amazonaws.com:3306/metabaselab?user=metabaselab&password=metabaselab&ssl=true&sslfactory=org.mysql.ssl.NonValidatingFactory
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120
