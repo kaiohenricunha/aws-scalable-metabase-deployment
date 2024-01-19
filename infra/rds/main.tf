@@ -1,7 +1,7 @@
 module "db" {
   source = "terraform-aws-modules/rds/aws"
 
-  identifier = "${var.db_name}-default"
+  identifier = var.db_name
 
   create_db_option_group    = false
   create_db_parameter_group = false
