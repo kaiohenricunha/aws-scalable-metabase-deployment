@@ -17,7 +17,7 @@ module "db" {
   password = var.db_password
   port     = var.db_port
 
-  iam_database_authentication_enabled = true
+  iam_database_authentication_enabled = false
 
   multi_az               = true
   vpc_security_group_ids = var.vpc_security_group_ids
