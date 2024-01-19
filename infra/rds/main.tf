@@ -25,7 +25,7 @@ module "db" {
   subnet_ids             = var.subnet_ids
   create_db_subnet_group = true
 
-  skip_final_snapshot = true
+  skip_final_snapshot = false
   deletion_protection = false
 
   maintenance_window = "Mon:00:00-Mon:03:00"
