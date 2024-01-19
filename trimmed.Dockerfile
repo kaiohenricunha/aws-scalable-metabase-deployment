@@ -12,7 +12,7 @@ FROM ubuntu:latest
 COPY --from=k6-stage /usr/bin/k6 /usr/bin/k6
 
 # Update and install necessary basic packages
-RUN apt-get update && apt-get install -y curl git wget bash-completion software-properties-common groff unzip tree vim sudo
+RUN apt-get update && apt-get install -y curl git wget bash-completion software-properties-common groff unzip tree vim
 
 # Set up a non-root user and set working directory
 RUN useradd -m sre
