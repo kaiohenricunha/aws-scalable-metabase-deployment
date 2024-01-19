@@ -19,12 +19,12 @@ locals {
 module "lab_vpc" {
   source = "../../infra/vpc"
 
-  name             = local.name
-  vpc_cidr         = local.vpc_cidr
-  azs              = local.azs
+  name            = local.name
+  vpc_cidr        = local.vpc_cidr
+  azs             = local.azs
   private_subnets = ["10.0.0.0/19", "10.0.32.0/19", "10.0.128.0/19"]
   public_subnets  = ["10.0.64.0/19", "10.0.96.0/19", "10.0.160.0/19"]
-  intra_subnets = ["10.0.192.0/19", "10.0.224.0/19"]
+  intra_subnets   = ["10.0.192.0/19", "10.0.224.0/19"]
 
   tags = local.tags
 }
@@ -68,7 +68,6 @@ module "eks_fargate_karpenter" {
 ################################################################################
 # RDS
 ################################################################################
-
 module "lab_rds" {
   source = "../../infra/rds"
 
