@@ -76,7 +76,7 @@ module "lab_rds" {
   db_name     = local.name
   db_username = local.name
   db_port     = 3306
-  db_password = var.db_password
+  db_password = "metabaselab"
 
   vpc_security_group_ids = [module.security_group.security_group_id]
   subnet_ids             = module.lab_vpc.database_subnets

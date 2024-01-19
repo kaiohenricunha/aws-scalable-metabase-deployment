@@ -1,6 +1,6 @@
 database:
   type: mysql
-  port: "3306"
+  port: 3306
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120
