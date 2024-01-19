@@ -18,6 +18,7 @@ module "db" {
   port     = var.db_port
 
   iam_database_authentication_enabled = false
+  manage_master_user_password         = false
 
   multi_az               = true
   vpc_security_group_ids = var.vpc_security_group_ids
