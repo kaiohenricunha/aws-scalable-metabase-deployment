@@ -22,10 +22,9 @@ module "lab_vpc" {
   name             = local.name
   vpc_cidr         = local.vpc_cidr
   azs              = local.azs
-  private_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
-  public_subnets   = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 4)]
-  database_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 8)]
-  intra_subnets    = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 12)]
+  private_subnets = ["10.0.0.0/19", "10.0.32.0/19", "10.0.128.0/19"]
+  public_subnets  = ["10.0.64.0/19", "10.0.96.0/19", "10.0.160.0/19"]
+  intra_subnets = ["10.0.192.0/19", "10.0.224.0/19"]
 
   tags = local.tags
 }
@@ -76,10 +75,10 @@ module "lab_rds" {
   db_name     = local.name
   db_username = local.name
   db_port     = 3306
-  db_password = "metabaselab"
+  db_password = var.db_password
 
-  vpc_security_group_ids = [module.security_group.security_group_id]
-  subnet_ids             = module.lab_vpc.database_subnets
+  vpc_security_group_ids = [module.security_group.security_group_id, module.eks_fargate_karpenter.cluster_primary_security_group_id]
+  subnet_ids             = module.lab_vpc.intra_subnets
 
   tags = local.tags
 }

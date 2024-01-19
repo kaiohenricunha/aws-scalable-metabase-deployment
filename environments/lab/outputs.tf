@@ -13,11 +13,6 @@ output "public_subnets" {
   value       = module.lab_vpc.public_subnets
 }
 
-output "database_subnets" {
-  description = "Ids of database subnets"
-  value       = module.lab_vpc.database_subnets
-}
-
 output "default_security_group_id" {
   description = "The ID of the default security group"
   value       = module.lab_vpc.default_security_group_id
