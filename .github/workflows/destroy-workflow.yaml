@@ -38,6 +38,10 @@ jobs:
         cd environments/lab
         terraform init
 
+    - name: Configure kubectl
+      run: |
+        aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+
     # Destroy Karpenter and its dependencies first
     - name: Terraform Destroy Karpenter
       run: |
