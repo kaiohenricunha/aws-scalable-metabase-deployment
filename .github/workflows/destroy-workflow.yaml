@@ -9,6 +9,11 @@ env:
 
 on:
   workflow_dispatch:
+    inputs:
+      terraform_components:
+        description: 'Comma-separated list of Terraform components to apply (e.g., vpc,security_group,eks,rds,karpenter)'
+        required: true
+        default: 'ingress,vpc,security_group,eks,rds,karpenter'
 
 jobs:
   destroy:
@@ -39,31 +44,42 @@ jobs:
         terraform init
 
     - name: Configure kubectl
+      if: contains(github.event.inputs.terraform_components, 'ingress') || contains(github.event.inputs.terraform_components, 'karpenter')
       run: |
         aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
 
+    - name: Delete Istio Ingress Gateway
+      if: contains(github.event.inputs.terraform_components, 'ingress')
+      run: |
+        kubectl delete -f helm/istio/gateway.yaml
+
     # Destroy Karpenter and its dependencies first
     - name: Terraform Destroy Karpenter
+      if: contains(github.event.inputs.terraform_components, 'karpenter')
       run: |
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter.module.karpenter -auto-approve
 
     - name: Terraform Destroy RDS
+      if: contains(github.event.inputs.terraform_components, 'rds')
       run: |
         cd environments/lab
         terraform destroy -target=module.lab_rds -auto-approve
 
     - name: Terraform Destroy EKS
+      if: contains(github.event.inputs.terraform_components, 'eks')
       run: |
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter -auto-approve
 
     - name: Terraform Destroy RDS Security Group
+      if: contains(github.event.inputs.terraform_components, 'rds')
       run: |
         cd environments/lab
         terraform destroy -target=module.security_group -auto-approve
 
     - name: Terraform Destroy VPC
+      if: contains(github.event.inputs.terraform_components, 'vpc')
       run: |
         cd environments/lab
         terraform destroy -target=module.lab_vpc -auto-approve

@@ -33,8 +33,3 @@ variable "intra_subnets" {
   description = "A list of intra subnets"
   type        = list(string)
 }
-
-variable "database_subnets" {
-  description = "A list of database subnets"
-  type        = list(string)
-}
