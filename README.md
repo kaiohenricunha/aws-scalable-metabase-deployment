@@ -278,9 +278,7 @@ env:
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
   DB_NAME: "metabase"
-  DB_USERNAME: "metabase"
-  DB_PORT: "3306"
-
+  DB_PASSWORD: ${{ secrets.RDS_PASSWORD }}
 on:
   workflow_dispatch:
     inputs:
