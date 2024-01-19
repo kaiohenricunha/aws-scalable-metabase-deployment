@@ -40,10 +40,6 @@ jobs:
           cd environments/lab
           terraform plan -target=module.lab_vpc
 
-      - name: Echo DB Password # for debugging
-        run: echo "DB Password is $TF_VAR_db_password"
-
-
       - name: Terraform Plan RDS Security Group
         run: |
           cd environments/lab

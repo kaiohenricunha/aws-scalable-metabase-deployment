@@ -8,7 +8,6 @@ env:
   RDS_ENDPOINT: ${{ secrets.RDS_ENDPOINT }}
   RDS_PASSWORD: ${{ secrets.RDS_PASSWORD }}
   DB_NAME: "metabaselab"
-  DB_USERNAME: "metabaselab"
   DB_PORT: "3306"
 
 on:
@@ -99,8 +98,8 @@ jobs:
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
             --set database.host="${{ secrets.RDS_ENDPOINT }}" \
             --set database.dbname="${{ secrets.DB_NAME }}" \
-            --set database.username="${{ secrets.DB_USERNAME }}" \
-            --set database.password="${{ secrets.RDS_PASSWORD }}"
+            --set database.username="${{ secrets.DB_NAME }}" \
+            --set database.password="${{ secrets.DB_PASSWORD }}"
           kubectl apply -f metabase-scaledobject.yaml
 
       - name: Istio injection for Metabase
