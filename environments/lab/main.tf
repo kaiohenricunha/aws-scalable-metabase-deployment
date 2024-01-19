@@ -97,7 +97,6 @@ module "security_group" {
   # ingress
   ingress_with_source_security_group_id = [
     {
-      rule                     = "database-tcp"
       source_security_group_id = module.eks_fargate_karpenter.cluster_primary_security_group_id
       from_port                = 3306
       to_port                  = 3306
