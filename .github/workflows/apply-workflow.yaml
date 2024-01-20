@@ -56,6 +56,10 @@ jobs:
         cd environments/lab
         terraform apply -target=module.security_group -auto-approve
 
+    - name: Configure kubectl
+      run: |
+        aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+
     # At this point, since the previous components are already set up,
     # terraform will only apply Karpenter and AWS Load Balancer Controller.
     - name: Terraform Apply Karpenter and AWS Load Balancer Controller
