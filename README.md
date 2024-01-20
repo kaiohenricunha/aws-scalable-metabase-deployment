@@ -406,34 +406,6 @@ resources:
 2. Java Options & Probes: Sets the Java options for Garbage Collection and configures liveness and readiness probes for Kubernetes, determining service health and readiness with specific time parameters.
 3. Service & Resources: Defines the service type as ClusterIP for internal cluster communication and allocates resource requests for CPU and memory in the Kubernetes environment.
 
-### Istio Configuration
-
-```yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: metabase-vs
-  namespace: metabase
-spec:
-  hosts:
-    - "*"
-  gateways:
-    - istio-system/ingressgateway
-  http:
-    - match:
-        - uri:
-            prefix: /metabase
-      route:
-        - destination:
-            host: metabase.metabase.svc.cluster.local
-            port:
-              number: 80
-```
-
-The Istio VirtualService above was used to route traffic to the Metabase service. It matches requests reaching the Istio ingressgateway with the `/metabase` prefix and routes them to the Metabase service.
-
-It's important to note that this will only work if the metabase namespace is labeled with `istio-injection=enabled`. This is done in the helm-workflow.yaml workflow.
-
 ### Scaling Metabase with Keda
 
 Keda was used to scale Metabase. The following ScaledObject was used:
