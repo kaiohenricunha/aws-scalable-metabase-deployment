@@ -14,15 +14,17 @@ module "vpc" {
   single_nat_gateway = true
 
   public_subnet_tags = {
-    "kubernetes.io/role/elb" = "1"
-    "profile"                = "public"
+    "kubernetes.io/role/elb"        = "1"
+    "kubernetes.io/cluster/${var.name}" = "shared"
+    "profile"                       = "public"
   }
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/cluster/${var.name}" = "shared"
     # Tags subnets for Karpenter auto-discovery
-    "karpenter.sh/discovery" = "metabaselab"
-    "profile"                = "private"
+    "karpenter.sh/discovery"        = var.name
+    "profile"                       = "private"
   }
 
   tags = var.tags
