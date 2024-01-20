@@ -136,8 +136,8 @@ resource "aws_iam_role" "load_balancer_controller_role" {
         },
         Condition = {
           StringEquals = {
-            "module.eks_fargate_karpenter.oidc_provider:sub" : "system:serviceaccount:kube-system:aws-load-balancer-controller",
-            "module.eks_fargate_karpenter.oidc_provider:aud" : "sts.amazonaws.com"
+            "${module.eks_fargate_karpenter.oidc_provider}:sub" : "system:serviceaccount:kube-system:aws-load-balancer-controller"
+            "${module.eks_fargate_karpenter.oidc_provider}:aud" : "sts.amazonaws.com"
           }
         }
       }
