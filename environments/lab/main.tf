@@ -7,6 +7,8 @@ locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 
+  oidc_id = regex("https://oidc.eks.${local.region}.amazonaws.com/id/(.*)", module.eks_fargate_karpenter.cluster_oidc_issuer_url)[0]
+
   tags = {
     Name       = local.name
     Repository = "https://github.com/kaiohenricunha/aws-scalable-metabase-deployment"
@@ -104,4 +106,78 @@ module "security_group" {
   ]
 
   tags = local.tags
+}
+
+################################################################################
+# AWS Load Balancer Controller
+################################################################################
+data "http" "iam_policy" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json"
+}
+
+resource "aws_iam_policy" "load_balancer_controller" {
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  description = "IAM policy for AWS Load Balancer Controller"
+  policy      = data.http.iam_policy.body
+}
+
+resource "aws_iam_role" "load_balancer_controller_role" {
+  name = "eks-load-balancer-controller-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Effect = "Allow",
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/oidc.eks.${local.region}.amazonaws.com/id/${local.oidc_id}"
+        },
+        Condition = {
+          StringEquals = {
+            "${module.eks_fargate_karpenter.cluster_oidc_issuer_url}:sub" = "system:serviceaccount:kube-system:aws-load-balancer-controller"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "load_balancer_controller_policy_attach" {
+  role       = aws_iam_role.load_balancer_controller_role.name
+  policy_arn = aws_iam_policy.load_balancer_controller.arn
+}
+
+resource "kubernetes_service_account" "load_balancer_controller" {
+  metadata {
+    name      = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    annotations = {
+      "eks.amazonaws.com/role-arn" = aws_iam_role.load_balancer_controller_role.arn
+    }
+  }
+}
+
+resource "helm_release" "aws_load_balancer_controller" {
+  name       = "aws-load-balancer-controller"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+
+  set {
+    name  = "clusterName"
+    value = local.name
+  }
+
+  set {
+    name  = "serviceAccount.create"
+    value = "false"
+  }
+
+  set {
+    name  = "serviceAccount.name"
+    value = "aws-load-balancer-controller"
+  }
+
+  depends_on = [aws_iam_role.load_balancer_controller_role, kubernetes_service_account.load_balancer_controller]
 }
