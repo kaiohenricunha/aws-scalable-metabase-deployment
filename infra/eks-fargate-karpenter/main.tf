@@ -206,7 +206,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
         # Include micro instance sizes
         - key: karpenter.k8s.aws/instance-size
           operator: In
-          values: [micro]
+          values: [micro, small]
       providerRef:
         name: default
       kubeletConfiguration:
