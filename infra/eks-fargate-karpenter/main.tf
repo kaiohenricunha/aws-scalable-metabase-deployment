@@ -10,6 +10,8 @@ terraform {
   required_version = "~> 1.0"
 }
 
+data "aws_caller_identity" "current" {}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "19.21.0"
@@ -67,6 +69,13 @@ module "eks" {
         "system:bootstrappers",
         "system:nodes",
       ]
+    },
+  ]
+  aws_auth_users = [
+    {
+      userarn  = data.aws_caller_identity.current.arn
+      username = data.aws_caller_identity.current.user_id
+      groups   = ["system:masters"]
     },
   ]
 
@@ -175,7 +184,7 @@ resource "kubectl_manifest" "karpenter_node_pool" {
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
       kubelet:
-        maxPods: 11
+        maxPods: 50
   YAML
 
   depends_on = [
@@ -196,8 +205,8 @@ resource "kubectl_manifest" "karpenter_provisioner" {
         # Resource limits constrain the total size of the cluster.
         # Limits prevent Karpenter from creating new instances once the limit is exceeded.
         limits:
-          cpu: "1000"
-          memory: 1000Gi
+          cpu: "2000"
+          memory: 2000Gi
       requirements:
         # Include general purpose instance families
         - key: karpenter.k8s.aws/instance-family
@@ -210,7 +219,34 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       providerRef:
         name: default
       kubeletConfiguration:
-        maxPods: 11
+        maxPods: 45
+  YAML
+
+  depends_on = [
+    kubectl_manifest.karpenter_node_class
+  ]
+}
+
+resource "kubectl_manifest" "karpenter_provisioner_grafana" {
+  yaml_body = <<-YAML
+    apiVersion: karpenter.sh/v1alpha5
+    kind: Provisioner
+    metadata:
+      name: grafana
+    spec:
+      ttlSecondsAfterEmpty: 60
+      ttlSecondsUntilExpired: 86400
+      requirements:
+        - key: "grafana-exclusive"
+          operator: "Equals"
+          values: ["true"]
+      providerRef:
+        name: default
+      kubeletConfiguration:
+        maxPods: 5
+      taints:
+        - key: "grafana-exclusive"
+          effect: "NoSchedule"
   YAML
 
   depends_on = [
