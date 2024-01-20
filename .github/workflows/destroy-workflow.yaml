@@ -53,6 +53,18 @@ jobs:
       run: |
         kubectl delete -f helm/istio/gateway.yaml
 
+    - name: Terraform Destroy RDS
+      if: contains(github.event.inputs.terraform_components, 'rds')
+      run: |
+        cd environments/lab
+        terraform destroy -target=module.lab_rds -auto-approve
+
+    - name: Terraform Destroy RDS Security Group
+      if: contains(github.event.inputs.terraform_components, 'rds')
+      run: |
+        cd environments/lab
+        terraform destroy -target=module.security_group -auto-approve
+
     # Destroy Karpenter and its dependencies first
     - name: Terraform Destroy Karpenter
       if: contains(github.event.inputs.terraform_components, 'karpenter')
@@ -60,23 +72,11 @@ jobs:
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter.module.karpenter -auto-approve
 
-    - name: Terraform Destroy RDS
-      if: contains(github.event.inputs.terraform_components, 'rds')
-      run: |
-        cd environments/lab
-        terraform destroy -target=module.lab_rds -auto-approve
-
     - name: Terraform Destroy EKS
       if: contains(github.event.inputs.terraform_components, 'eks')
       run: |
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter -auto-approve
-
-    - name: Terraform Destroy RDS Security Group
-      if: contains(github.event.inputs.terraform_components, 'rds')
-      run: |
-        cd environments/lab
-        terraform destroy -target=module.security_group -auto-approve
 
     - name: Terraform Destroy VPC
       if: contains(github.event.inputs.terraform_components, 'vpc')
