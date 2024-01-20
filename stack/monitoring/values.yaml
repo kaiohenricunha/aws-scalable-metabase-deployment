@@ -28,10 +28,6 @@ grafana:
   service:
     enabled: true
     type: LoadBalancer
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: "external"
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     port: 80
     targetPort: 3000
 prometheus:
@@ -46,10 +42,6 @@ prometheus:
       memory: 512Mi
   service:
     type: LoadBalancer
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: "external"
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     port: 9090
     targetPort: 9090
 alertmanager:

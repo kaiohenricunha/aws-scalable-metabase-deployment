@@ -1,0 +1,14 @@
+## Discovery Settings
+pilot:
+  autoscaleEnabled: true
+  autoscaleMin: 1
+  autoscaleMax: 5
+  autoscaleBehavior: {}
+  replicaCount: 1
+  rollingMaxSurge: 100%
+  rollingMaxUnavailable: 25%
+  # Resources for a small pilot install
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi

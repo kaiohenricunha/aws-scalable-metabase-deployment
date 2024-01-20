@@ -1,4 +1,4 @@
-name: Destroy Infrastructure
+name: Destroy All Infrastructure
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -13,10 +13,10 @@ on:
       terraform_components:
         description: 'Comma-separated list of Terraform components to apply (e.g., vpc,security_group,eks,rds,karpenter)'
         required: true
-        default: 'ingress,vpc,security_group,eks,rds,karpenter'
+        default: 'lb,vpc,eks,rds,karpenter'
 
 jobs:
-  destroy:
+  destroy-all:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,12 +44,26 @@ jobs:
         terraform init
 
     - name: Configure kubectl
-      if: contains(github.event.inputs.terraform_components, 'lb') || contains(github.event.inputs.terraform_components, 'karpenter')
+      if: contains(github.event.inputs.terraform_components, 'lb') || contains(github.event.inputs.terraform_components, 'karpenter') || contains(github.event.inputs.terraform_components, 'stack')
       run: |
         aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
 
-    - name: Terraform Destroy Karpenter and AWS Load Balancer Controller
+    - name: Trigger Stack Uninstall Workflow
+      if: contains(github.event.inputs.terraform_components, 'stack')
+      run: |
+        curl -XPOST -u "username:${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${{ github.repository }}/actions/workflows/uninstall-stack-workflow.yaml/dispatches" \
+        -d '{"ref":"main"}'
+
+    - name: Terraform Destroy AWS Load Balancer Controller
       if: contains(github.event.inputs.terraform_components, 'lb')
+      run: |
+        cd environments/lab
+        terraform destroy -target=helm_release.aws_load_balancer_controller -auto-approve
+
+    - name: Terraform Destroy Karpenter
+      if: contains(github.event.inputs.terraform_components, 'karpenter')
       run: |
         cd environments/lab
         terraform destroy -target=module.eks_fargate_karpenter.module.eks -auto-approve
@@ -85,7 +99,7 @@ jobs:
         cd environments/lab
         terraform destroy -target=module.lab_vpc -auto-approve
 
-    - name: Terraform Destroy All
+    - name: Terraform Destroy Debris
       run: |
         cd environments/lab
         terraform destroy -auto-approve

@@ -1,0 +1,71 @@
+name: Cluster Stack Uninstallation
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: 'us-east-1'
+  EKS_CLUSTER_NAME: 'metabaselab'
+
+on:
+  workflow_dispatch:
+    inputs:
+      components:
+        description: 'Comma-separated list of components to uninstall (e.g., istio,metabase)'
+        required: true
+        default: 'metabase,monitoring,metrics-server,keda'
+
+jobs:
+  uninstall-stack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: 'v3.13.3'
+
+      - name: Helm uninstall Metabase
+        if: contains(github.event.inputs.components, 'metabase')
+        run: |
+          helm uninstall metabase --namespace metabase
+
+      - name: Helm uninstall kube-prometheus-stack(monitoring)
+        if: contains(github.event.inputs.components, 'monitoring')
+        run: |
+          helm uninstall monitoring --namespace monitoring
+
+      - name: Uninstall metrics-server
+        if: contains(github.event.inputs.components, 'metrics-server')
+        run: |
+          kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
+
+      - name: Helm uninstall Istio Ingress and resources
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm uninstall istio-ingressgateway --namespace istio-ingress
+          cd stack/istio
+          kubectl delete -f gateway.yaml
+          kubectl delete -f istio-hpa.yaml && kubectl delete -f podmonitor.yaml && kubectl delete -f servicemonitor.yaml
+
+      - name: Helm uninstall Istio
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm uninstall istiod --namespace istio-system
+          helm uninstall istio-base --namespace istio-system
+
+      - name: Helm uninstall KEDA
+        if: contains(github.event.inputs.components, 'keda')
+        run: |
+          helm uninstall keda --namespace keda
