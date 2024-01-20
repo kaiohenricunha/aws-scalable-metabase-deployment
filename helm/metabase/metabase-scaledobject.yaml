@@ -13,7 +13,7 @@ spec:
   pollingInterval: 1
   fallback:
     failureThreshold: 3
-    replicas: 6  
+    replicas: 3  
   triggers:
   - type: prometheus
     metricType: AverageValue
