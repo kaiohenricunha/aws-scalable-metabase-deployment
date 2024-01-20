@@ -171,6 +171,11 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   set {
+    name  = "region"
+    value = local.region
+  }
+
+  set {
     name  = "serviceAccount.create"
     value = "false"
   }
@@ -181,7 +186,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   }
 
   set {
-    name  = "aws-vpc-id"
+    name  = "vpcId"
     value = module.lab_vpc.vpc_id
   }
 

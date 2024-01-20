@@ -11,7 +11,14 @@ readinessProbe:
   timeoutSeconds: 3
   periodSeconds: 5
 service:
-  type: ClusterIP
+  name: metabase
+  type: LoadBalancer
+  externalPort: 80
+  internalPort: 3000
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 resources:
   requests:
     cpu: 500m
