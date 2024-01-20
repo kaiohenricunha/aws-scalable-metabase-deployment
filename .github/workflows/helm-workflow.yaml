@@ -86,6 +86,12 @@ jobs:
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 
+      - name: Fetch RDS Endpoint for Metabase
+        if: contains(github.event.inputs.components, 'metabase')
+        run: |
+          RDS_ENDPOINT=$(aws rds describe-db-instances --db-instance-identifier metabaselab --query 'DBInstances[0].Endpoint.Address' --output text)
+          echo "RDS_ENDPOINT=$RDS_ENDPOINT" >> $GITHUB_ENV
+
       - name: Helm install Metabase
         if: contains(github.event.inputs.components, 'metabase')
         run: |
@@ -93,8 +99,6 @@ jobs:
           helm repo update
           cd helm/metabase
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
-            --set database.host="${{ secrets.RDS_ENDPOINT }}" \
-            --set database.dbname="${{ secrets.DB_NAME }}" \
-            --set database.username="${{ secrets.DB_NAME }}" \
+            --set database.host="$RDS_ENDPOINT" \
             --set database.password="${{ secrets.DB_PASSWORD }}"
           kubectl apply -f metabase-scaledobject.yaml

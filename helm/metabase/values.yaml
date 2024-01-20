@@ -1,3 +1,5 @@
+dbname: metabaselab
+username: metabaselab
 database:
   type: mysql
   port: 3306
