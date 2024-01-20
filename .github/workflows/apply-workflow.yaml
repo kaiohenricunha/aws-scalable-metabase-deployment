@@ -41,6 +41,11 @@ jobs:
         cd environments/lab
         terraform apply -target=module.lab_vpc -auto-approve
 
+    - name: Terraform Apply EKS
+      run: |
+        cd environments/lab
+        terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
+
     - name: Terraform Apply RDS
       run: |
         cd environments/lab
@@ -50,11 +55,6 @@ jobs:
       run: |
         cd environments/lab
         terraform apply -target=module.security_group -auto-approve
-
-    - name: Terraform Apply EKS
-      run: |
-        cd environments/lab
-        terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
 
     - name: Configure kubectl
       run: |
@@ -67,7 +67,7 @@ jobs:
 
     # At this point, since the previous components are already set up,
     # terraform will only apply Karpenter and its dependencies.
-    - name: Terraform Apply Karpenter
+    - name: Terraform Apply Karpenter and AWS Load Balancer Controller
       run: |
         cd environments/lab
         terraform apply -auto-approve

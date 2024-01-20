@@ -47,3 +47,8 @@ output "cluster_version" {
   description = "The eks_fargate_karpenter cluster Kubernetes version."
   value       = module.eks_fargate_karpenter.cluster_version
 }
+
+output "cluster_oidc_issuer_url" {
+  description = "The eks_fargate_karpenter cluster OpenID Connect issuer URL."
+  value       = module.eks_fargate_karpenter.cluster_oidc_issuer_url
+}

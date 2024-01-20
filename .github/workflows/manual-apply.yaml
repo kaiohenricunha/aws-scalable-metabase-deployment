@@ -44,6 +44,12 @@ jobs:
           cd environments/lab
           terraform apply -target=module.lab_vpc -auto-approve
 
+      - name: Terraform Apply EKS
+        if: contains(github.event.inputs.terraform_components, 'eks')
+        run: |
+          cd environments/lab
+          terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
+
       - name: Terraform Apply RDS
         if: contains(github.event.inputs.terraform_components, 'rds')
         run: |
@@ -55,12 +61,6 @@ jobs:
         run: |
           cd environments/lab
           terraform apply -target=module.security_group -auto-approve
-
-      - name: Terraform Apply EKS
-        if: contains(github.event.inputs.terraform_components, 'eks')
-        run: |
-          cd environments/lab
-          terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
 
       - name: Configure kubectl
         if: contains(github.event.inputs.terraform_components, 'eks')
@@ -75,7 +75,7 @@ jobs:
 
       # At this point, since the previous components are already set up,
       # terraform will only apply Karpenter and its dependencies.
-      - name: Terraform Apply Karpenter
+      - name: Terraform Apply Karpenter and AWS Load Balancer Controller
         if: contains(github.event.inputs.terraform_components, 'eks')
         run: |
           cd environments/lab
