@@ -41,3 +41,8 @@ output "cluster_oidc_issuer_url" {
   description = "The eks_fargate_karpenter cluster OpenID Connect issuer URL."
   value       = module.eks.cluster_oidc_issuer_url
 }
+
+output "oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
+  value       = module.eks_fargate_karpenter.oidc_provider
+}
