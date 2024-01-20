@@ -15,7 +15,7 @@ on:
         default: 'metabase,monitoring,metrics-server,keda'
 
 jobs:
-  helm:
+  uninstall-stack:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

@@ -1,4 +1,4 @@
-name: Apply Infrastructure
+name: Apply All Infrastructure
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -13,7 +13,7 @@ on:
 # when needed to skip this flow, include [skip ci] in the commit message:
 # git commit -m "Destroy infrastructure changes [skip ci]"
 jobs:
-  apply-infra:
+  apply-all-infra:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Repository
