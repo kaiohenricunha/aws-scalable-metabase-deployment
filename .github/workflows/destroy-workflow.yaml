@@ -44,14 +44,15 @@ jobs:
         terraform init
 
     - name: Configure kubectl
-      if: contains(github.event.inputs.terraform_components, 'ingress') || contains(github.event.inputs.terraform_components, 'karpenter')
+      if: contains(github.event.inputs.terraform_components, 'lb') || contains(github.event.inputs.terraform_components, 'karpenter')
       run: |
         aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
 
-    - name: Delete Istio Ingress Gateway
-      if: contains(github.event.inputs.terraform_components, 'ingress')
+    - name: Terraform Destroy Karpenter and AWS Load Balancer Controller
+      if: contains(github.event.inputs.terraform_components, 'lb')
       run: |
-        kubectl delete -f helm/istio/gateway.yaml
+        cd environments/lab
+        terraform destroy -target=module.eks_fargate_karpenter.module.eks -auto-approve
 
     - name: Terraform Destroy RDS
       if: contains(github.event.inputs.terraform_components, 'rds')
@@ -83,3 +84,8 @@ jobs:
       run: |
         cd environments/lab
         terraform destroy -target=module.lab_vpc -auto-approve
+
+    - name: Terraform Destroy All
+      run: |
+        cd environments/lab
+        terraform destroy -auto-approve
