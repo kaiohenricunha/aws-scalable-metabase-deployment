@@ -13,6 +13,7 @@ on:
       components:
         description: 'Comma-separated list of components to apply (e.g., istio,metabase)'
         required: true
+        default: 'keda,metrics-server,monitoring,metabase'
 
 jobs:
   helm:
@@ -41,22 +42,38 @@ jobs:
         run: |
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo update
-          cd helm/keda
+          cd stack/keda
           helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
 
-      - name: Helm install kube-prometheus-stack
-        if: contains(github.event.inputs.components, 'prometheus')
+      - name: Helm install Istio
+        if: contains(github.event.inputs.components, 'istio')
         run: |
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
           helm repo update
-          cd helm/kube-prometheus-stack
-          helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
-          kubectl apply -f keda-dashboard.yaml
+          cd stack/istio
+          helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
+          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
+
+      - name: Helm install Istio Ingress and resources
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm upgrade --install istio-ingressgateway istio/gateway -n istio-ingress --create-namespace
+          cd stack/istio
+          kubectl apply -f gateway.yaml
+          kubectl apply -f istio-hpa.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
         run: |
           kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
+
+      - name: Helm install kube-prometheus-stack(monitoring)
+        if: contains(github.event.inputs.components, 'monitoring')
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+          cd stack/monitoring
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
 
       - name: Fetch RDS Endpoint for Metabase
         if: contains(github.event.inputs.components, 'metabase')
@@ -69,8 +86,8 @@ jobs:
         run: |
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
-          cd helm/metabase
+          cd stack/metabase
           helm upgrade --install metabase pmint93/metabase --namespace metabase -f values.yaml --create-namespace \
             --set database.host="$RDS_ENDPOINT" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
-          kubectl apply -f metabase-scaledobject.yaml
+          kubectl apply -f metabase-hpa.yaml && kubectl apply -f metabase-scaling-dashboard.yaml

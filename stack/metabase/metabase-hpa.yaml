@@ -19,9 +19,9 @@ spec:
     metricType: AverageValue
     metadata:
       serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090
-      metricName: istio_requests_total_keda
+      metricName: avg_http_requests
       query: |
-        sum(istio_requests_total{destination_app="metabase"})
+        sum(http_requests_total{deployment="metabase"}[5m]))
       threshold: "10"
   - type: memory
     metricType: Utilization

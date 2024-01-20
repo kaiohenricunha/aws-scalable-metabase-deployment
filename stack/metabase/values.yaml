@@ -25,3 +25,8 @@ resources:
   requests:
     cpu: 500m
     memory: 500Mi
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+  port: 9191

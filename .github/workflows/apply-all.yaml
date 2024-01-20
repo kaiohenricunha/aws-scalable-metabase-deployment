@@ -1,0 +1,78 @@
+name: Apply Infrastructure
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: 'us-east-1'
+  EKS_CLUSTER_NAME: 'metabaselab'
+  TF_VAR_db_password: ${{ secrets.RDS_PASSWORD }}
+
+on:
+  workflow_dispatch:
+
+# when needed to skip this flow, include [skip ci] in the commit message:
+# git commit -m "Destroy infrastructure changes [skip ci]"
+jobs:
+  apply-infra:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Initialize
+      run: |
+        cd environments/lab
+        terraform init
+
+    - name: Terraform Apply VPC
+      run: |
+        cd environments/lab
+        terraform apply -target=module.lab_vpc -auto-approve
+
+    - name: Terraform Apply EKS
+      run: |
+        cd environments/lab
+        terraform apply -target=module.eks_fargate_karpenter.module.eks -auto-approve
+
+    - name: Terraform Apply RDS
+      run: |
+        cd environments/lab
+        terraform apply -target=module.lab_rds -auto-approve
+
+    - name: Terraform Apply RDS Security Group
+      run: |
+        cd environments/lab
+        terraform apply -target=module.security_group -auto-approve
+
+    - name: Configure kubectl
+      run: |
+        aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: 'v3.13.3'
+
+    # At this point, since the previous components are already set up,
+    # terraform will only apply Karpenter and AWS Load Balancer Controller.
+    - name: Terraform Apply Karpenter and AWS Load Balancer Controller
+      run: |
+        cd environments/lab
+        terraform apply -auto-approve
+
+    - name: Trigger Stack Installation Workflow
+      run: |
+        curl -XPOST -u "username:${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${{ github.repository }}/actions/workflows/stack-workflow.yaml/dispatches" \
+        -d '{"ref":"main"}'
