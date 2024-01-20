@@ -1,8 +1,8 @@
-dbname: metabaselab
-username: metabaselab
 database:
   type: mysql
   port: 3306
+  dbname: metabaselab
+  username: metabaselab
 javaOpts: "-XX:+UseSerialGC"
 livenessProbe:
   initialDelaySeconds: 120
