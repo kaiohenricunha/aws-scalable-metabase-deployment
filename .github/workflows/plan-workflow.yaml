@@ -35,27 +35,7 @@ jobs:
           cd environments/lab
           terraform init
 
-      - name: Terraform Plan VPC
+      - name: Terraform Plan
         run: |
           cd environments/lab
-          terraform plan -target=module.lab_vpc
-
-      - name: Terraform Plan RDS Security Group
-        run: |
-          cd environments/lab
-          terraform plan -target=module.security_group
-
-      - name: Terraform Plan EKS
-        run: |
-          cd environments/lab
-          terraform plan -target=module.eks_fargate_karpenter.module.eks
-
-      - name: Terraform Plan Karpenter
-        run: |
-          cd environments/lab
-          terraform plan -target=module.karpenter
-
-      - name: Terraform Plan RDS
-        run: |
-          cd environments/lab
-          terraform plan -target=module.lab_rds
+          terraform plan
