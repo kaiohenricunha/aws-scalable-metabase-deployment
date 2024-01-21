@@ -3,10 +3,10 @@ database:
   port: 3306
   dbname: metabaselab
   username: metabaselab
-livenessProbe:
-  initialDelaySeconds: 60
-readinessProbe:
-  initialDelaySeconds: 1200
+# livenessProbe:
+#   initialDelaySeconds: 60
+# readinessProbe:
+#   initialDelaySeconds: 1200
 service:
   name: metabase
   type: LoadBalancer
@@ -28,4 +28,6 @@ monitoring:
   serviceMonitor:
     enabled: true
   port: 9191
-javaOpts: "-Xmx300m"
+javaOpts: "-Xmx50m"
+strategy:
+  type: Recreate
