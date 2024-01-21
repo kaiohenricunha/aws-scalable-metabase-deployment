@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     kind: Deployment
     name: metabase
-  minReplicaCount: 7
+  minReplicaCount: 1
   maxReplicaCount: 20
   cooldownPeriod: 30
   pollingInterval: 1 
