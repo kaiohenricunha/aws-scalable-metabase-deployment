@@ -31,3 +31,5 @@ monitoring:
 javaOpts: "-Xmx200m -Xms100m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
 strategy:
   type: Recreate
+readinessProbe:
+  initialDelaySeconds: 1200
