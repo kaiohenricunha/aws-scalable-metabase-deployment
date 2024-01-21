@@ -1,4 +1,6 @@
 operator:
+  serviceMonitor:
+    enabled: true
   replicaCount: 2
 prometheus:
   metricServer:
