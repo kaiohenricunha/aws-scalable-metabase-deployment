@@ -18,12 +18,12 @@ spec:
   - type: prometheus
     metricType: AverageValue
     metadata:
-      serverAddress: http://prometheus-operated.monitoring.svc.cluster.local:9090
+      serverAddress: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
       metricName: avg_http_requests
       query: |
         sum(http_requests_total{deployment="metabase"}[5m]))
       threshold: "10"
-  - type: memory
+  - type: cpu
     metricType: Utilization
     metadata:
       value: "100"

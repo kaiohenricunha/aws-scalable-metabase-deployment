@@ -33,6 +33,14 @@ grafana:
     maxReplicas: 5
     targetCPU: "60"
     targetMemory: ""
+  sidecar:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
 prometheus:
   enabled: true
   replicaCount: 2

@@ -23,8 +23,8 @@ service:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 resources:
   requests:
-    cpu: 500m
-    memory: 500Mi
+    cpu: 700m
+    memory: 700Mi
   limits:
     cpu: 700m
     memory: 700Mi
