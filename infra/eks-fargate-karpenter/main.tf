@@ -131,7 +131,7 @@ resource "helm_release" "karpenter" {
     EOT
   ]
 
-  timeout = 1800 # 30 minutes
+  timeout = 3600
   wait    = true
 }
 

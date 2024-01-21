@@ -186,7 +186,7 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = module.lab_vpc.vpc_id
   }
 
-  timeout = 900 # 15 minutes
+  timeout = 3600
   wait    = true
 
   depends_on = [aws_iam_role.load_balancer_controller_role, kubernetes_service_account.load_balancer_controller]
