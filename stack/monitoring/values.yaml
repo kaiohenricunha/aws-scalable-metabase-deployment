@@ -51,8 +51,8 @@ prometheus:
       cpu: 500m
       memory: 1Gi
     requests:
-      cpu: 150m
-      memory: 250Mi
+      cpu: 400m
+      memory: 800Mi
   service:
     type: LoadBalancer
     port: 9090
