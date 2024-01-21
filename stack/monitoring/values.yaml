@@ -44,15 +44,15 @@ grafana:
 prometheus:
   enabled: true
   prometheusSpec:
-    replicas: 1
+    replicas: 2
     retention: 6h
   resources:
     limits:
-      cpu: 1000m
-      memory: 800Mi
+      cpu: 500m
+      memory: 300Mi
     requests:
-      cpu: 350m
-      memory: 400Mi
+      cpu: 150m
+      memory: 250Mi
   service:
     type: LoadBalancer
     port: 9090
