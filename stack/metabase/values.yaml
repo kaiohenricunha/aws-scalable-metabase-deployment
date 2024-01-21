@@ -19,15 +19,15 @@ service:
 resources:
   requests:
     cpu: 200m
-    memory: "200Mi"
+    memory: "100Mi"
   limits:
     cpu: 1000m
-    memory: "500Mi"
+    memory: "300Mi"
 monitoring:
   enabled: true
   serviceMonitor:
     enabled: true
   port: 9191
-javaOpts: "-Xmx300m"
+javaOpts: "-Xmx250m -Xms150m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
 strategy:
   type: Recreate
