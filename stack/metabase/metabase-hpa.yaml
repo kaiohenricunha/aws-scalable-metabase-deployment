@@ -21,7 +21,7 @@ spec:
       serverAddress: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
       metricName: avg_http_requests
       query: |
-        sum(http_requests_total{deployment="metabase"}[5m]))
+        sum(http_requests_total{deployment="metabase"}[5m])
       threshold: "10"
   - type: cpu
     metricType: Utilization
