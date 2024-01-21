@@ -1,16 +1,15 @@
-defaults:
-  pilot:
-    autoscaleEnabled: true
-    autoscaleMin: 1
-    autoscaleMax: 5
-    autoscaleBehavior: {}
-    replicaCount: 1
-    rollingMaxSurge: 100%
-    rollingMaxUnavailable: 25%
-    resources:
-      requests:
-        cpu: 500m
-        memory: 1048Mi
+pilot:
+  autoscaleEnabled: true
+  autoscaleMin: 1
+  autoscaleMax: 5
+  autoscaleBehavior: {}
+  replicaCount: 1
+  rollingMaxSurge: 100%
+  rollingMaxUnavailable: 25%
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1048Mi
 global:
   proxy:
     resources:
