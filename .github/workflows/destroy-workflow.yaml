@@ -94,6 +94,7 @@ jobs:
         terraform destroy -target=module.lab_vpc -auto-approve
 
     - name: Terraform Destroy Debris
+      if: contains(github.event.inputs.terraform_components, 'vpc') || contains(github.event.inputs.terraform_components, 'eks')
       run: |
         cd environments/lab
         terraform destroy -auto-approve
