@@ -53,7 +53,7 @@ jobs:
           cd stack/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system --wait
-          kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
+          kubectl apply -f istiod-values.yaml && kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
