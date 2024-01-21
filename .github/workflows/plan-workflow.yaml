@@ -35,6 +35,10 @@ jobs:
           cd environments/lab
           terraform init
 
+      - name: Configure kubectl
+        run: |
+          aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+
       - name: Terraform Plan
         run: |
           cd environments/lab

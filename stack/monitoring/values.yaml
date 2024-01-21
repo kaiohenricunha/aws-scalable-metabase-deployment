@@ -13,8 +13,8 @@ grafana:
   enabled: true
   resources:
     limits:
-      cpu: 500m
-      memory: 500Mi
+      cpu: 300m
+      memory: 350Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -33,16 +33,26 @@ grafana:
     maxReplicas: 5
     targetCPU: "60"
     targetMemory: ""
+  sidecar:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 50Mi
 prometheus:
   enabled: true
-  replicaCount: 2
+  prometheusSpec:
+    replicas: 2
+    retention: 6h
   resources:
     limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 250m
+      cpu: 200m
       memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
   service:
     type: LoadBalancer
     port: 9090
