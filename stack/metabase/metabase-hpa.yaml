@@ -7,13 +7,10 @@ spec:
   scaleTargetRef:
     kind: Deployment
     name: metabase
-  minReplicaCount: 5
+  minReplicaCount: 2
   maxReplicaCount: 15
   cooldownPeriod: 30
-  pollingInterval: 1
-  fallback:
-    failureThreshold: 3
-    replicas: 3  
+  pollingInterval: 1 
   triggers:
   - type: prometheus
     metricType: AverageValue

@@ -29,7 +29,7 @@ grafana:
       service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
     maxReplicas: 5
     targetCPU: "60"
     targetMemory: ""
@@ -48,8 +48,8 @@ prometheus:
     retention: 6h
   resources:
     limits:
-      cpu: 300m
-      memory: 350Mi
+      cpu: 200m
+      memory: 256Mi
     requests:
       cpu: 100m
       memory: 128Mi

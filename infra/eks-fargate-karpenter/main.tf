@@ -202,7 +202,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       name: default
     spec:
       ttlSecondsAfterEmpty: 60 # scale down nodes after 60 seconds without workloads (excluding daemons)
-      ttlSecondsUntilExpired: 86400 # expire nodes after 1 day (in seconds)
+      ttlSecondsUntilExpired: 18000 # scale down nodes after 5 hours
       limits:
         # Resource limits constrain the total size of the cluster.
         # Limits prevent Karpenter from creating new instances once the limit is exceeded.
