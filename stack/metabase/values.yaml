@@ -28,6 +28,6 @@ monitoring:
   serviceMonitor:
     enabled: true
   port: 9191
-javaOpts: "-Xmx50m"
+javaOpts: "-Xmx100m"
 strategy:
   type: Recreate
