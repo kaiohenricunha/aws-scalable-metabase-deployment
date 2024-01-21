@@ -4,13 +4,9 @@ database:
   dbname: metabaselab
   username: metabaselab
 livenessProbe:
-  initialDelaySeconds: 240
-  timeoutSeconds: 90
-  failureThreshold: 6
+  initialDelaySeconds: 60
 readinessProbe:
-  initialDelaySeconds: 90
-  timeoutSeconds: 9
-  periodSeconds: 15
+  initialDelaySeconds: 1200
 service:
   name: metabase
   type: LoadBalancer
