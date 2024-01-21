@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: metabase
   minReplicaCount: 1
-  maxReplicaCount: 1
+  maxReplicaCount: 10
   cooldownPeriod: 30
   pollingInterval: 1 
   fallback:
@@ -18,14 +18,10 @@ spec:
   - type: prometheus
     metricType: AverageValue
     metadata:
-      serverAddress: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      serverAddress: http://k8s-monitori-monitori-39ad27836a-893fa56697012ddb.elb.us-east-1.amazonaws.com:9090
       metricName: avg_http_requests
       query: sum(rate(http_requests_total{deployment="metabase"}[2m]))
-      threshold: "5"
-  - type: cpu
-    metricType: Utilization
-    metadata:
-      value: "100"
+      threshold: "10"
   - type: memory
     metricType: Utilization
     metadata:
