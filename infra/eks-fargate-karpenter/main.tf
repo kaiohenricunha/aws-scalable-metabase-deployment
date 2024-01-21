@@ -73,9 +73,8 @@ module "eks" {
   ]
   aws_auth_users = [
     {
-      userarn  = data.aws_caller_identity.current.arn
-      username = data.aws_caller_identity.current.user_id
-      groups   = ["system:masters"]
+      userarn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      groups  = ["system:masters"]
     },
   ]
 
@@ -131,6 +130,9 @@ resource "helm_release" "karpenter" {
         eks.amazonaws.com/role-arn: ${module.karpenter.irsa_arn} 
     EOT
   ]
+
+  timeout = 1800 # 30 minutes
+  wait    = true
 }
 
 resource "kubectl_manifest" "karpenter_node_class" {
@@ -178,8 +180,8 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       # Resource limits constrain the total size of the cluster.
       # Limits prevent Karpenter from creating new instances once the limit is exceeded.
       limits:
-        cpu: "1000"
-        memory: 1000Gi
+        cpu: "26"
+        memory: 13Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -205,8 +207,8 @@ resource "kubectl_manifest" "karpenter_provisioner" {
         # Resource limits constrain the total size of the cluster.
         # Limits prevent Karpenter from creating new instances once the limit is exceeded.
         limits:
-          cpu: "2000"
-          memory: 2000Gi
+          cpu: "26" # 13 instances * 2 vCPUs
+          memory: 13Gi
       requirements:
         # Include general purpose instance families
         - key: karpenter.k8s.aws/instance-family
@@ -219,34 +221,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
       providerRef:
         name: default
       kubeletConfiguration:
-        maxPods: 45
-  YAML
-
-  depends_on = [
-    kubectl_manifest.karpenter_node_class
-  ]
-}
-
-resource "kubectl_manifest" "karpenter_provisioner_grafana" {
-  yaml_body = <<-YAML
-    apiVersion: karpenter.sh/v1alpha5
-    kind: Provisioner
-    metadata:
-      name: grafana
-    spec:
-      ttlSecondsAfterEmpty: 60
-      ttlSecondsUntilExpired: 86400
-      requirements:
-        - key: "grafana-exclusive"
-          operator: "Equals"
-          values: ["true"]
-      providerRef:
-        name: default
-      kubeletConfiguration:
-        maxPods: 5
-      taints:
-        - key: "grafana-exclusive"
-          effect: "NoSchedule"
+        maxPods: 50
   YAML
 
   depends_on = [
