@@ -11,6 +11,9 @@ spec:
   maxReplicaCount: 15
   cooldownPeriod: 30
   pollingInterval: 1 
+  fallback:
+    failureThreshold: 2
+    replicas: 1
   triggers:
   - type: prometheus
     metricType: AverageValue
