@@ -11,29 +11,24 @@ kubeStateMetrics:
         memory: 32Mi
 grafana:
   enabled: true
-  global:
-    autoscaling:
-      enabled: true
-      minReplicas: 1
-      maxReplicas: 5
-      targetCPU: "60"
-      targetMemory: ""
-    resources:
-      limits:
-        cpu: 500m
-        memory: 500Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
   service:
     enabled: true
     type: LoadBalancer
     port: 80
     targetPort: 3000
-  tolerations:
-  - key: "grafana-exclusive"
-    operator: "Exists"
-    effect: "NoSchedule"
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: "60"
+    targetMemory: ""
 prometheus:
   enabled: true
   replicaCount: 2
