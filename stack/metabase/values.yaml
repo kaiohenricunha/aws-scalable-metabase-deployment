@@ -22,13 +22,13 @@ resources:
     memory: 100Mi
   limits:
     cpu: 1250m
-    memory: 250Mi
+    memory: 350Mi
 monitoring:
   enabled: true
   serviceMonitor:
     enabled: true
   port: 9191
-javaOpts: "-Xmx200m -Xms100m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
+javaOpts: "-Xmx200m -Xms150m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
 strategy:
   type: Recreate
 readinessProbe:
