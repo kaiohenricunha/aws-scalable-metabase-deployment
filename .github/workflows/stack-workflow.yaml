@@ -52,15 +52,8 @@ jobs:
           helm repo update
           cd stack/istio
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
-          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-
-      - name: Helm install Istio Ingress and resources
-        if: contains(github.event.inputs.components, 'istio')
-        run: |
-          helm upgrade --install istio-ingressgateway istio/gateway -n istio-ingress --create-namespace
-          cd stack/istio
-          kubectl apply -f gateway.yaml
-          kubectl apply -f istio-hpa.yaml && kubectl apply -f podmonitor.yaml && kubectl apply -f servicemonitor.yaml
+          helm upgrade --install istiod istio/istiod -n istio-system --wait
+          kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
 
       - name: Install metrics-server
         if: contains(github.event.inputs.components, 'metrics-server')
@@ -91,3 +84,8 @@ jobs:
             --set database.host="$RDS_ENDPOINT" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
           kubectl apply -f metabase-hpa.yaml && kubectl apply -f metabase-scaling-dashboard.yaml
+
+      - name: Istio Injection
+        if: contains(github.event.inputs.components, 'istio') && contains(github.event.inputs.components, 'metabase')
+        run: |
+          kubectl label namespace metabase istio-injection=enabled --overwrite
