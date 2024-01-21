@@ -60,11 +60,6 @@ module "eks_fargate_karpenter" {
         { namespace = "kube-system" }
       ]
     }
-    metabase = {
-      selectors = [
-        { namespace = "metabase" }
-      ]
-    }
   }
 }
 
@@ -190,6 +185,9 @@ resource "helm_release" "aws_load_balancer_controller" {
     name  = "vpcId"
     value = module.lab_vpc.vpc_id
   }
+
+  timeout = 900 # 15 minutes
+  wait    = true
 
   depends_on = [aws_iam_role.load_balancer_controller_role, kubernetes_service_account.load_balancer_controller]
 }
