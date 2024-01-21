@@ -51,6 +51,11 @@ jobs:
         run: |
           kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
 
+      - name: Helm uninstall KEDA
+        if: contains(github.event.inputs.components, 'keda')
+        run: |
+          helm uninstall keda --namespace keda
+
       - name: Helm uninstall Istio Ingress and resources
         if: contains(github.event.inputs.components, 'istio')
         run: |
@@ -64,8 +69,3 @@ jobs:
         run: |
           helm uninstall istiod --namespace istio-system
           helm uninstall istio-base --namespace istio-system
-
-      - name: Helm uninstall KEDA
-        if: contains(github.event.inputs.components, 'keda')
-        run: |
-          helm uninstall keda --namespace keda

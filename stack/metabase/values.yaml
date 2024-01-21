@@ -24,6 +24,5 @@ monitoring:
   serviceMonitor:
     enabled: true
   port: 9191
-# javaOpts: "-Xmx200m -Xms150m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
 strategy:
   type: Recreate

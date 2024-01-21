@@ -9,4 +9,3 @@ prometheus:
       enabled: true
     podMonitor:
       enabled: true
-    useHostNetwork: true
