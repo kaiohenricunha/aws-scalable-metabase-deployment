@@ -3,14 +3,6 @@ database:
   port: 3306
   dbname: metabaselab
   username: metabaselab
-livenessProbe:
-  initialDelaySeconds: 240
-  timeoutSeconds: 90
-  failureThreshold: 6
-readinessProbe:
-  initialDelaySeconds: 90
-  timeoutSeconds: 9
-  periodSeconds: 15
 service:
   name: metabase
   type: LoadBalancer
@@ -22,13 +14,16 @@ service:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 resources:
   requests:
-    cpu: 100m
-    memory: 150Mi
+    cpu: 1000m
+    memory: 800Mi
   limits:
-    cpu: 200m
-    memory: 256Mi
+    cpu: 1250m
+    memory: 1Gi
 monitoring:
   enabled: true
   serviceMonitor:
     enabled: true
   port: 9191
+# javaOpts: "-Xmx200m -Xms150m -Xgc:genpar -XXcompaction:percentage=20 -XXtlaSize:min=1k"
+strategy:
+  type: Recreate

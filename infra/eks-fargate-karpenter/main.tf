@@ -176,12 +176,12 @@ resource "kubectl_manifest" "karpenter_node_pool" {
               values: ["on-demand"]
             - key: "node.kubernetes.io/instance-type"
               operator: In
-              values: ["t2.micro", "t3.micro"]
+              values: ["t2.micro", "t3.micro", "t3.small"]
       # Resource limits constrain the total size of the cluster.
       # Limits prevent Karpenter from creating new instances once the limit is exceeded.
       limits:
-        cpu: "26"
-        memory: 13Gi
+        cpu: "46" # 23 instances * 2 vCPUs
+        memory: 23Gi # 23 instances * 1 GiB
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -217,7 +217,7 @@ resource "kubectl_manifest" "karpenter_provisioner" {
         # Include micro instance sizes
         - key: karpenter.k8s.aws/instance-size
           operator: In
-          values: [micro]
+          values: [micro, small]
       providerRef:
         name: default
       kubeletConfiguration:

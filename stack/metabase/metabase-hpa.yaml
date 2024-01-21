@@ -7,20 +7,26 @@ spec:
   scaleTargetRef:
     kind: Deployment
     name: metabase
-  minReplicaCount: 2
-  maxReplicaCount: 15
+  minReplicaCount: 1
+  maxReplicaCount: 1
   cooldownPeriod: 30
   pollingInterval: 1 
+  fallback:
+    failureThreshold: 1
+    replicas: 1
   triggers:
   - type: prometheus
     metricType: AverageValue
     metadata:
       serverAddress: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
       metricName: avg_http_requests
-      query: |
-        sum(http_requests_total{deployment="metabase"}[5m])
-      threshold: "10"
+      query: sum(rate(http_requests_total{deployment="metabase"}[2m]))
+      threshold: "5"
   - type: cpu
     metricType: Utilization
     metadata:
       value: "100"
+  - type: memory
+    metricType: Utilization
+    metadata:
+      value: "150"
