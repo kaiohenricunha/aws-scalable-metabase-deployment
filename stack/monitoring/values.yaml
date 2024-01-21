@@ -44,7 +44,7 @@ grafana:
 prometheus:
   enabled: true
   prometheusSpec:
-    replicas: 2
+    replicas: 1
     retention: 6h
   resources:
     limits:
