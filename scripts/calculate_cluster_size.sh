@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# reference: https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
 # Input: Total number of pods, Max pods per instance, vCPUs per instance, Memory per instance (in GiB)
 read -p "Enter total number of pods: " total_pods
 read -p "Enter max pods per instance (e.g., 4 for t3.micro): " max_pods_per_instance
