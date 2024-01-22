@@ -56,16 +56,16 @@ jobs:
         run: |
           helm uninstall keda --namespace keda
 
-      - name: Helm uninstall Istio Ingress and resources
-        if: contains(github.event.inputs.components, 'istio')
-        run: |
-          helm uninstall istio-ingressgateway --namespace istio-ingress
-          cd stack/istio
-          kubectl delete -f gateway.yaml
-          kubectl delete -f istio-hpa.yaml && kubectl delete -f podmonitor.yaml && kubectl delete -f servicemonitor.yaml
+      # - name: Helm uninstall Istio Ingress and resources
+      #   if: contains(github.event.inputs.components, 'istio')
+      #   run: |
+      #     helm uninstall istio-ingressgateway --namespace istio-ingress
+      #     cd stack/istio
+      #     kubectl delete -f gateway.yaml
+      #     kubectl delete -f istio-hpa.yaml && kubectl delete -f podmonitor.yaml && kubectl delete -f servicemonitor.yaml
 
-      - name: Helm uninstall Istio
-        if: contains(github.event.inputs.components, 'istio')
-        run: |
-          helm uninstall istiod --namespace istio-system
-          helm uninstall istio-base --namespace istio-system
+      # - name: Helm uninstall Istio
+      #   if: contains(github.event.inputs.components, 'istio')
+      #   run: |
+      #     helm uninstall istiod --namespace istio-system
+      #     helm uninstall istio-base --namespace istio-system
