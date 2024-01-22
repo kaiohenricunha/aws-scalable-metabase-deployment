@@ -57,7 +57,6 @@ jobs:
           helm repo update
           cd stack/keda
           helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
-          kubectl apply -f keda-dashboard.yaml
 
       - name: Fetch RDS Endpoint for Metabase
         if: contains(github.event.inputs.components, 'metabase')
