@@ -13,7 +13,7 @@ on:
       components:
         description: 'Comma-separated list of components to apply (e.g., istio,metabase)'
         required: true
-        default: 'keda,metrics-server,monitoring,metabase'
+        default: 'keda,metrics-server,monitoring,metabase,istio'
 
 jobs:
   helm:
