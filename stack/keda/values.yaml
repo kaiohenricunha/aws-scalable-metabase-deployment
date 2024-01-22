@@ -19,9 +19,8 @@ prometheus:
       enabled: true
 logging:
   operator:
-    level: debug
+    level: info
   metricServer:
-    level: 4
+    level: 0
   webhooks:
-    level: debug
-  
+    level: 0
