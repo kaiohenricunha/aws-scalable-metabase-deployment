@@ -15,8 +15,8 @@ grafana:
     sidecar.istio.io/inject: "true"
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 300m
+      memory: 300Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -38,15 +38,15 @@ grafana:
   sidecar:
     resources:
       limits:
-        cpu: 100m
-        memory: 128Mi
+        cpu: 200m
+        memory: 200Mi
       requests:
         cpu: 50m
         memory: 50Mi
 prometheus:
   enabled: true
   prometheusSpec:
-    replicas: 1
+    replicas: 2
     retention: 6h
     # below parameters are necessary to be able to scrape metrics from service/pod monitors in all namespaces
     serviceMonitorNamespaceSelector: {}

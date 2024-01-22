@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: metabase
   minReplicaCount: 1
-  maxReplicaCount: 10
+  maxReplicaCount: 20
   cooldownPeriod: 30
   pollingInterval: 1 
   fallback:
