@@ -1,6 +1,4 @@
 operator:
-  serviceMonitor:
-    enabled: true
   replicaCount: 2
 prometheus:
   metricServer:
@@ -9,3 +7,20 @@ prometheus:
       enabled: true
     podMonitor:
       enabled: true
+  operator:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+    podMonitor:
+      enabled: true
+  webhooks:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: 0
+  webhooks:
+    level: 0

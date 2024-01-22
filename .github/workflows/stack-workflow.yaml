@@ -50,14 +50,24 @@ jobs:
           cd stack/monitoring
           helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring -f values.yaml --create-namespace
 
+      - name: Helm install Istio
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm repo update
+          cd stack/istio
+          helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
+          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
+          kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
+          helm upgrade --install istio-ingressgateway istio/gateway -n istio-system -f istio-ingress.yaml --wait
+
       - name: Helm install KEDA
         if: contains(github.event.inputs.components, 'keda')
         run: |
           helm repo add kedacore https://kedacore.github.io/charts
           helm repo update
           cd stack/keda
-          helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-
-          kubectl apply -f keda-dashboard.yaml
+          helm upgrade --install keda kedacore/keda --namespace keda -f values.yaml --create-namespace
 
       - name: Fetch RDS Endpoint for Metabase
         if: contains(github.event.inputs.components, 'metabase')
@@ -68,6 +78,11 @@ jobs:
       - name: Helm install Metabase
         if: contains(github.event.inputs.components, 'metabase')
         run: |
+          if ! kubectl get namespace metabase; then
+            kubectl create namespace metabase
+            kubectl label namespace metabase istio-injection=enabled
+          fi
+
           helm repo add pmint93 https://pmint93.github.io/helm-charts
           helm repo update
           cd stack/metabase
@@ -75,21 +90,3 @@ jobs:
             --set database.host="$RDS_ENDPOINT" \
             --set database.password="${{ secrets.RDS_PASSWORD }}"
           kubectl apply -f metabase-hpa.yaml && kubectl apply -f metabase-scaling-dashboard.yaml
-
-      # - name: Istio Injection
-      #   if: contains(github.event.inputs.components, 'istio') && contains(github.event.inputs.components, 'metabase') || contains(github.event.inputs.components, 'istio') && contains(github.event.inputs.components, 'keda')
-      #   run: |
-      #     kubectl label namespace metabase istio-injection=enabled --overwrite
-      #     kubectl rollout restart deployment -n metabase
-      #     kubectl label namespace keda istio-injection=enabled --overwrite
-      #     kubectl rollout restart deployment -n keda
-
-      # - name: Helm install Istio
-      #   if: contains(github.event.inputs.components, 'istio')
-      #   run: |
-      #     helm repo add istio https://istio-release.storage.googleapis.com/charts
-      #     helm repo update
-      #     cd stack/istio
-      #     helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
-      #     helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-      #     kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml

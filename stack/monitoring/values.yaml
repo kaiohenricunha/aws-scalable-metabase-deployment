@@ -11,6 +11,8 @@ kubeStateMetrics:
         memory: 32Mi
 grafana:
   enabled: true
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
   resources:
     limits:
       cpu: 100m
@@ -46,6 +48,11 @@ prometheus:
   prometheusSpec:
     replicas: 1
     retention: 6h
+    # below parameters are necessary to be able to scrape metrics from service/pod monitors in all namespaces
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
   resources:
     limits:
       cpu: 500m
