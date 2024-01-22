@@ -15,14 +15,14 @@ spec:
     failureThreshold: 1
     replicas: 1
   triggers:
-  # - type: prometheus
-  #   metricType: AverageValue
-  #   metadata:
-  #     serverAddress: http://k8s-monitori-monitori-39ad27836a-893fa56697012ddb.elb.us-east-1.amazonaws.com:9090
-  #     metricName: istio_requests_total_keda
-  #     query: |
-  #       sum(istio_requests_total{destination_app="metabase"})
-  #     threshold: "10"
+  - type: prometheus
+    metricType: AverageValue
+    metadata:
+      serverAddress: http://k8s-monitori-monitori-39ad27836a-893fa56697012ddb.elb.us-east-1.amazonaws.com:9090
+      metricName: istio_requests_total_keda
+      query: |
+        sum(istio_requests_total{destination_workload="metabase"})
+      threshold: "100"
   - type: memory
     metricType: Utilization
     metadata:
