@@ -17,6 +17,10 @@ prometheus:
     enabled: true
     serviceMonitor:
       enabled: true
+webhooks:
+  enabled: true
+  replicaCount: 2
+  useHostNetwork: true
 logging:
   operator:
     level: info
