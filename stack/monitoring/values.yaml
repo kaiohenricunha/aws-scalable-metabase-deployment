@@ -46,6 +46,7 @@ prometheus:
   prometheusSpec:
     replicas: 1
     retention: 6h
+    # below parameters are necessary to be able to scrape metrics from service/pod monitors in all namespaces
     serviceMonitorNamespaceSelector: {}
     serviceMonitorSelectorNilUsesHelmValues: false
     podMonitorNamespaceSelector: {}

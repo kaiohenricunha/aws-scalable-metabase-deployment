@@ -17,3 +17,11 @@ prometheus:
     enabled: true
     serviceMonitor:
       enabled: true
+logging:
+  operator:
+    level: info
+  metricServer:
+    level: 4
+  webhooks:
+    level: info
+  
