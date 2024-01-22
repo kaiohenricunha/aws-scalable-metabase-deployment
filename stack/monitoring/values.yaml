@@ -46,6 +46,10 @@ prometheus:
   prometheusSpec:
     replicas: 1
     retention: 6h
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
   resources:
     limits:
       cpu: 500m
