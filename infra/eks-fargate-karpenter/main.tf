@@ -180,8 +180,8 @@ resource "kubectl_manifest" "karpenter_node_pool" {
       # Resource limits constrain the total size of the cluster.
       # Limits prevent Karpenter from creating new instances once the limit is exceeded.
       limits:
-        cpu: "46" # 23 instances * 2 vCPUs
-        memory: 23Gi # 23 instances * 1 GiB
+        cpu: 56
+        memory: 56Gi
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -207,8 +207,8 @@ resource "kubectl_manifest" "karpenter_provisioner" {
         # Resource limits constrain the total size of the cluster.
         # Limits prevent Karpenter from creating new instances once the limit is exceeded.
         limits:
-          cpu: "26" # 13 instances * 2 vCPUs
-          memory: 13Gi
+          cpu: 56
+          memory: 56Gi
       requirements:
         # Include general purpose instance families
         - key: karpenter.k8s.aws/instance-family
