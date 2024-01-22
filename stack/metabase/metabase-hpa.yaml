@@ -22,7 +22,7 @@ spec:
       metricName: istio_requests_total
       query: |
         sum(istio_requests_total{destination_workload="metabase"})
-      threshold: "100"
+      threshold: "1000"
   - type: memory
     metricType: Utilization
     metadata:
