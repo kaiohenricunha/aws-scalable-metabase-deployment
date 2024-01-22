@@ -11,6 +11,8 @@ kubeStateMetrics:
         memory: 32Mi
 grafana:
   enabled: true
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
   resources:
     limits:
       cpu: 100m
