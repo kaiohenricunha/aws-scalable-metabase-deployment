@@ -26,5 +26,5 @@ logging:
     level: info
   metricServer:
     level: 0
-  webhooks:
-    level: 0
+  # webhooks:
+  #   level: 0
