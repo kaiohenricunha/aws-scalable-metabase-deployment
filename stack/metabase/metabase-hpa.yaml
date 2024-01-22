@@ -14,15 +14,6 @@ spec:
   fallback:
     failureThreshold: 1
     replicas: 1
-  advanced:
-    horizontalPodAutoscalerConfig:
-      behavior:
-        scaleDown:
-          stabilizationWindowSeconds: 300
-          policies:
-            - type: Percent
-              value: 100
-              periodSeconds: 15
   triggers:
   - type: prometheus
     metadata:
