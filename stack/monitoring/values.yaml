@@ -22,13 +22,13 @@ grafana:
       memory: 128Mi
   service:
     enabled: true
-    type: ClusterIP
-    # port: 80
-    # targetPort: 3000
-    # annotations:
-    #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    #   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    type: LoadBalancer
+    port: 80
+    targetPort: 3000
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "external"
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
   autoscaling:
     enabled: true
     minReplicas: 1
