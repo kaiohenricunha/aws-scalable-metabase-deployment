@@ -37,7 +37,11 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+          if aws eks --region ${{ env.AWS_DEFAULT_REGION }} describe-cluster --name ${{ env.EKS_CLUSTER_NAME }} &>/dev/null; then
+            aws eks --region ${{ env.AWS_DEFAULT_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }}
+          else
+            echo "EKS Cluster ${{ env.EKS_CLUSTER_NAME }} does not exist."
+          fi
 
       - name: Terraform Plan
         run: |
