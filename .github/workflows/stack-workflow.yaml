@@ -84,12 +84,14 @@ jobs:
       #     kubectl label namespace keda istio-injection=enabled --overwrite
       #     kubectl rollout restart deployment -n keda
 
-      # - name: Helm install Istio
-      #   if: contains(github.event.inputs.components, 'istio')
-      #   run: |
-      #     helm repo add istio https://istio-release.storage.googleapis.com/charts
-      #     helm repo update
-      #     cd stack/istio
-      #     helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
-      #     helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
-      #     kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
+      - name: Helm install Istio
+        if: contains(github.event.inputs.components, 'istio')
+        run: |
+          helm repo add istio https://istio-release.storage.googleapis.com/charts
+          helm repo update
+          cd stack/istio
+          helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
+          helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
+          kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
+          helm upgrade --install istio-ingressgateway istio/gateway -n istio-system -f istio-ingress.yaml --wait
+          kubectl apply -f gateway.yaml

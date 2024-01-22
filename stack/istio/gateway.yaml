@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: gateway
+  name: single-gateway
   namespace: istio-system
 spec:
   selector:
@@ -13,3 +13,24 @@ spec:
       protocol: HTTP
     hosts:
     - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: monitoring-virtualservice
+spec:
+  hosts:
+  - "*" 
+  gateways:
+  - single-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/grafana"
+    rewrite:
+      uri: "/"
+    route:
+    - destination:
+        host: monitoring-grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
