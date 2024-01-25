@@ -26,3 +26,4 @@ spec:
     metricType: Utilization
     metadata:
       value: "150"
+#         sum(irate(istio_requests_total{destination_workload="metabase"}[2m]))

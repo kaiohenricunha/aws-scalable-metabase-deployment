@@ -59,7 +59,6 @@ jobs:
           helm upgrade --install istio-base istio/base -n istio-system --create-namespace --set defaultRevision=default
           helm upgrade --install istiod istio/istiod -n istio-system -f istiod-values.yaml --wait
           kubectl apply -f pod-monitor.yaml && kubectl apply -f service-monitor.yaml
-          helm upgrade --install istio-ingressgateway istio/gateway -n istio-system -f istio-ingress.yaml --wait
 
       - name: Helm install KEDA
         if: contains(github.event.inputs.components, 'keda')
