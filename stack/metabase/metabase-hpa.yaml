@@ -18,10 +18,11 @@ spec:
   - type: prometheus
     metadata:
       serverAddress: http://prometheus-operated.monitoring:9090
-      metricName: istio_requests_total
+      metricName: requests_per_second
+      # (rate) will give us the number of requests per second within a 2 minute window. sum() will add add data from all pods.
       query: |
-        sum(istio_requests_total{destination_workload="metabase"})
-      threshold: "1000"
+        sum(rate(istio_requests_total{destination_workload="metabase"}[2m]))
+      threshold: "100"
   - type: memory
     metricType: Utilization
     metadata:

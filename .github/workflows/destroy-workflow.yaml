@@ -62,13 +62,6 @@ jobs:
         cd environments/lab
         terraform destroy -target=helm_release.aws_load_balancer_controller -auto-approve
 
-    # Destroy Karpenter and its dependencies first
-    - name: Terraform Destroy Karpenter
-      if: contains(github.event.inputs.terraform_components, 'karpenter')
-      run: |
-        cd environments/lab
-        terraform destroy -target=module.eks_fargate_karpenter.module.karpenter -auto-approve
-
     - name: Terraform Destroy RDS
       if: contains(github.event.inputs.terraform_components, 'rds')
       run: |
@@ -80,6 +73,13 @@ jobs:
       run: |
         cd environments/lab
         terraform destroy -target=module.security_group -auto-approve
+
+    # Destroy Karpenter and its dependencies first
+    - name: Terraform Destroy Karpenter
+      if: contains(github.event.inputs.terraform_components, 'karpenter')
+      run: |
+        cd environments/lab
+        terraform destroy -target=module.eks_fargate_karpenter.module.karpenter -auto-approve
 
     - name: Terraform Destroy EKS
       if: contains(github.event.inputs.terraform_components, 'eks')
