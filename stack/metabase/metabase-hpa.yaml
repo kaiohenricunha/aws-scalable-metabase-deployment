@@ -8,7 +8,7 @@ spec:
     kind: Deployment
     name: metabase
   minReplicaCount: 1
-  maxReplicaCount: 20
+  maxReplicaCount: 10
   cooldownPeriod: 30
   pollingInterval: 1 
   fallback:
@@ -16,14 +16,14 @@ spec:
     replicas: 1
   triggers:
   - type: prometheus
-    metricType: AverageValue
     metadata:
       serverAddress: http://prometheus-operated.monitoring:9090
       metricName: istio_requests_total
       query: |
         sum(istio_requests_total{destination_workload="metabase"})
-      threshold: "100"
+      threshold: "1000"
   - type: memory
     metricType: Utilization
     metadata:
       value: "150"
+#         sum(irate(istio_requests_total{destination_workload="metabase"}[2m]))

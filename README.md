@@ -78,7 +78,7 @@ Here is the project tree overview:
 
 ## Step 1: Project Setup
 
-This phase involves setting up a local Docker environment tailored for SRE/DevOps tasks. The environment includes necessary tools and configurations for infrastructure management and development.
+This phase involves setting up a local Docker environment tailored for SRE/DevOps tasks and the core AWS infrastructure.
 
 ### Docker Image Configuration
 
