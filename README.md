@@ -13,6 +13,10 @@ The goal of this project is to demonstrate the use of Kubernetes on AWS to scale
 - **Prometheus and Grafana:** For monitoring and observability.
 - **Keda:** For scaling Metabase based on requests per second and memory usage.
 
+This is the project architecture:
+
+![ekfk-arch](./assets/ekfk-arch.drawio.png)
+
 Here is the project tree overview:
 
 ```bash
