@@ -34,7 +34,6 @@ override.tf.json
 terraform.rc
 
 annotations.md
-interview.md
 
 sudo.Dockerfile
 busybox.yaml
