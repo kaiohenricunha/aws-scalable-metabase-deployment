@@ -594,7 +594,7 @@ spec:
     kind: Deployment
     name: metabase
   minReplicaCount: 1
-  maxReplicaCount: 20
+  maxReplicaCount: 10
   cooldownPeriod: 30
   pollingInterval: 1 
   fallback:
@@ -602,20 +602,20 @@ spec:
     replicas: 1
   triggers:
   - type: prometheus
-    metricType: AverageValue
     metadata:
       serverAddress: http://prometheus-operated.monitoring:9090
-      metricName: istio_requests_total
+      metricName: requests_per_second
+      # (rate) will give us the number of requests per second within a 2 minute window. sum() will add add data from all pods.
       query: |
-        sum(istio_requests_total{destination_workload="metabase"})
+        sum(rate(istio_requests_total{destination_workload="metabase"}[2m]))
       threshold: "100"
   - type: memory
     metricType: Utilization
     metadata:
-      value: "150"
+      value: "110"
 ```
 
-The ScaledObject above scales the Metabase deployment based on the number of requests per second and memory usage. It uses the Prometheus metric `istio_requests_total` to get the number of requests per second and the Kubernetes metric `memory` to get the memory usage. The ScaledObject is configured to scale the deployment to a minimum of 1 replica and a maximum of 20 replicas. It also has a cooldown period of 30 seconds and a polling interval of 1 second. If the metrics are not available, it will fallback to 1 replica.
+The ScaledObject above scales the Metabase deployment based on the number of requests per second and memory usage. It uses the Prometheus metric `istio_requests_total` to get the number of requests per second and the Kubernetes metric `memory` to get the memory usage. The ScaledObject is configured to scale the deployment to a minimum of 1 replica and a maximum of 10 replicas. It also has a cooldown period of 30 seconds and a polling interval of 1 second. If the metrics are not available, it will fallback to 1 replica.
 
 After deploying the ScaledObject, you can check the HPA created by Keda:
 
